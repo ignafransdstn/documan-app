@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Management System - API Access Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            background: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .endpoint {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .port-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .warning {
+            color: #ffc107;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Document Management System - API Access Guide</h1>
+        <p>Panduan lengkap untuk mengakses API melalui Swagger UI</p>
+    </div>
+
+    <h2>📊 Port Configuration Summary</h2>
+    <div class="port-info">
+        <h3>Ports yang Digunakan dalam System:</h3>
+        <ul>
+            <li><strong>Backend API Server:</strong> Port <code>5000</code> (Development)</li>
+            <li><strong>Backend Test Server:</strong> Port <code>5001</code> (Testing)</li>
+            <li><strong>Frontend Vite Server:</strong> Port <code>5173</code> (Default Vite)</li>
+            <li><strong>PostgreSQL Database:</strong> Port <code>5432</code> (Standard PostgreSQL)</li>
+            <li><strong>Swagger UI:</strong> Port <code>5000</code> (Same as backend, endpoint: /api-docs)</li>
+        </ul>
+    </div>
+
+    <h2>🌐 Cara Mengakses Swagger UI</h2>
+    
+    <div class="endpoint">
+        <h3>1. Pastikan Backend Server Berjalan</h3>
+        <div class="code">
+            cd backend<br>
+            npm run dev
+        </div>
+        <p class="success">✅ Server berhasil berjalan di port 5000</p>
+    </div>
+
+    <div class="endpoint">
+        <h3>2. Akses Swagger UI di Browser</h3>
+        <div class="code">
+            URL: <a href="http://localhost:5000/api-docs" target="_blank">http://localhost:5000/api-docs</a>
+        </div>
+        <p>Buka URL tersebut di browser untuk mengakses dokumentasi API interaktif</p>
+    </div>
+
+    <h2>📋 API Endpoints yang Tersedia</h2>
+
+    <div class="endpoint">
+        <h3>Authentication (/api/auth)</h3>
+        <ul>
+            <li><code>POST /api/auth/register</code> - Register user baru</li>
+            <li><code>POST /api/auth/login</code> - Login user</li>
+            <li><code>POST /api/auth/refresh-token</code> - Refresh JWT token</li>
+            <li><code>GET /api/auth/profile</code> - Get user profile</li>
+        </ul>
+    </div>
+
+    <div class="endpoint">
+        <h3>Documents (/api/documents)</h3>
+        <ul>
+            <li><code>POST /api/documents</code> - Upload dokumen baru</li>
+            <li><code>GET /api/documents</code> - List semua dokumen</li>
+            <li><code>GET /api/documents/:id</code> - Get dokumen by ID</li>
+            <li><code>PUT /api/documents/:id</code> - Update dokumen</li>
+            <li><code>DELETE /api/documents/:id</code> - Delete dokumen</li>
+            <li><code>GET /api/documents/download/:id</code> - Download file</li>
+        </ul>
+    </div>
+
+    <div class="endpoint">
+        <h3>User Management (/api/users)</h3>
+        <ul>
+            <li><code>GET /api/users</code> - Get all users (Admin only)</li>
+            <li><code>GET /api/users/:id</code> - Get user by ID</li>
+            <li><code>PUT /api/users/:id</code> - Update user</li>
+            <li><code>DELETE /api/users/:id</code> - Delete user (Admin only)</li>
+            <li><code>GET /api/users/sessions</code> - Get user sessions (Admin only)</li>
+        </ul>
+    </div>
+
+    <h2>🔐 Testing API dengan Swagger UI</h2>
+    
+    <div class="endpoint">
+        <h3>Langkah-langkah Testing:</h3>
+        <ol>
+            <li><strong>Buka Swagger UI:</strong> <code>http://localhost:5000/api-docs</code></li>
+            <li><strong>Register User:</strong> Gunakan endpoint <code>POST /auth/register</code></li>
+            <li><strong>Login:</strong> Gunakan endpoint <code>POST /auth/login</code> untuk mendapatkan token</li>
+            <li><strong>Authorize:</strong> Klik tombol "Authorize" di Swagger UI dan masukkan token</li>
+            <li><strong>Test Endpoints:</strong> Coba berbagai endpoint yang memerlukan authentication</li>
+        </ol>
+    </div>
+
+    <h2>📝 Contoh Request</h2>
+    
+    <div class="endpoint">
+        <h3>Register User Baru:</h3>
+        <div class="code">
+            curl -X POST http://localhost:5000/api/auth/register \<br>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+            &nbsp;&nbsp;-d '{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"username": "testuser",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"email": "test@example.com",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"password": "password123"<br>
+            &nbsp;&nbsp;}'
+        </div>
+    </div>
+
+    <div class="endpoint">
+        <h3>Login User:</h3>
+        <div class="code">
+            curl -X POST http://localhost:5000/api/auth/login \<br>
+            &nbsp;&nbsp;-H "Content-Type: application/json" \<br>
+            &nbsp;&nbsp;-d '{<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"username": "testuser",<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;"password": "password123"<br>
+            &nbsp;&nbsp;}'
+        </div>
+    </div>
+
+    <h2>🎯 Status Server</h2>
+    <div class="endpoint">
+        <p class="success">✅ Backend Server: Running on port 5000</p>
+        <p class="success">✅ Database: Connected to PostgreSQL on port 5432</p>
+        <p class="success">✅ Swagger UI: Available at /api-docs</p>
+        <p class="warning">⚠️ Frontend: Not yet implemented (basic React setup)</p>
+    </div>
+
+    <h2>🔗 Quick Links</h2>
+    <div class="endpoint">
+        <ul>
+            <li><a href="http://localhost:5000/api-docs" target="_blank">Swagger UI Documentation</a></li>
+            <li><a href="http://localhost:5000/api/auth/register" target="_blank">Register Endpoint</a></li>
+            <li><a href="http://localhost:5000/api/documents" target="_blank">Documents Endpoint</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Auto-refresh status setiap 30 detik
+        setInterval(() => {
+            fetch('http://localhost:5000/api-docs')
+                .then(response => {
+                    if (response.ok) {
+                        document.querySelector('.success').style.color = '#28a745';
+                    }
+                })
+                .catch(() => {
+                    document.querySelector('.success').style.color = '#dc3545';
+                    document.querySelector('.success').textContent = '❌ Backend Server: Not responding';
+                });
+        }, 30000);
+    </script>
+</body>
+</html>
