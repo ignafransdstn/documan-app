@@ -60,6 +60,55 @@ module.exports = (sequelize) => {
     metadata: {
       type: DataTypes.JSONB,
       defaultValue: {}
+    },
+    // New certificate and property fields
+    certificateType: {
+      type: DataTypes.ENUM('SHM', 'SHGB', 'SHGU', 'SHP', 'HPL', 'AJB', 'Girik', 'Others'),
+      allowNull: true
+    },
+    landSize: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    areaName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    projectName: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    zoneUrl: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    zoneRtdr: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    publishDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    expiredDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    documentObtained: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    originDocument: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    previousOwner: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    company: {
+      type: DataTypes.ENUM('JH', 'JHT', 'BEP', 'PIJ'),
+      allowNull: true
     }
   }, {
     sequelize,

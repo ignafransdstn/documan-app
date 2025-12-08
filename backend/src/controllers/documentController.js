@@ -8,12 +8,30 @@ const createDocument = async (req, res) => {
   const transaction = await sequelize.transaction();
   
   try {
-    const { title, location, status, description, longitude, latitude } = req.body;
+    const { 
+      title, location, status, description, longitude, latitude,
+      certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
+      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+    } = req.body;
     const file = req.file;
 
     if (!file) {
       await transaction.rollback();
       return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Validate mandatory fields
+    if (!certificateType) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'certificateType is required' });
+    }
+    if (!publishDate) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'publishDate is required' });
+    }
+    if (!company) {
+      await transaction.rollback();
+      return res.status(400).json({ message: 'company is required' });
     }
 
     // Generate unique document number MD-000001 with lock
@@ -49,6 +67,18 @@ const createDocument = async (req, res) => {
       status,
       filePath: file.path,
       createdBy: req.user.id,
+      certificateType,
+      landSize: landSize || null,
+      areaName: areaName || null,
+      projectName: projectName || null,
+      zoneUrl: zoneUrl || null,
+      zoneRtdr: zoneRtdr || null,
+      publishDate: publishDate ? new Date(publishDate) : null,
+      expiredDate: expiredDate ? new Date(expiredDate) : null,
+      documentObtained: documentObtained ? new Date(documentObtained) : null,
+      originDocument: originDocument || null,
+      previousOwner: previousOwner || null,
+      company,
       metadata: {
         originalName: file.originalname,
         mimeType: file.mimetype,
@@ -84,7 +114,11 @@ const createDocument = async (req, res) => {
 
 const createSubDocument = async (req, res) => {
   try {
-    const { title, location, status, parentDocumentId, subDocumentNo, description, longitude, latitude } = req.body;
+    const { 
+      title, location, status, parentDocumentId, subDocumentNo, description, longitude, latitude,
+      certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
+      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+    } = req.body;
     const file = req.file;
 
     if (!file) {
@@ -93,6 +127,17 @@ const createSubDocument = async (req, res) => {
 
     if (!subDocumentNo) {
       return res.status(400).json({ message: 'Sub Document No is required' });
+    }
+
+    // Validate mandatory fields
+    if (!certificateType) {
+      return res.status(400).json({ message: 'certificateType is required' });
+    }
+    if (!publishDate) {
+      return res.status(400).json({ message: 'publishDate is required' });
+    }
+    if (!company) {
+      return res.status(400).json({ message: 'company is required' });
     }
 
     // Check if parent document exists
@@ -118,6 +163,18 @@ const createSubDocument = async (req, res) => {
       subDocumentNo: formattedSubDocNo,
       filePath: file.path,
       parentDocumentId,
+      certificateType,
+      landSize: landSize || null,
+      areaName: areaName || null,
+      projectName: projectName || null,
+      zoneUrl: zoneUrl || null,
+      zoneRtdr: zoneRtdr || null,
+      publishDate: publishDate ? new Date(publishDate) : null,
+      expiredDate: expiredDate ? new Date(expiredDate) : null,
+      documentObtained: documentObtained ? new Date(documentObtained) : null,
+      originDocument: originDocument || null,
+      previousOwner: previousOwner || null,
+      company,
       metadata: {
         originalName: file.originalname,
         mimeType: file.mimetype,
@@ -204,8 +261,44 @@ const updateDocument = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update documents' });
     }
 
-    const { title, location, status } = req.body;
-    await document.update({ title, location, status });
+    const { 
+      title, location, status, description, longitude, latitude,
+      certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
+      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+    } = req.body;
+    
+    // Validate mandatory fields if provided
+    if (certificateType !== undefined && !certificateType) {
+      return res.status(400).json({ message: 'certificateType is required' });
+    }
+    if (publishDate !== undefined && !publishDate) {
+      return res.status(400).json({ message: 'publishDate is required' });
+    }
+    if (company !== undefined && !company) {
+      return res.status(400).json({ message: 'company is required' });
+    }
+
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (location !== undefined) updateData.location = location;
+    if (status !== undefined) updateData.status = status;
+    if (description !== undefined) updateData.description = description;
+    if (longitude !== undefined) updateData.longitude = longitude ? parseFloat(longitude) : null;
+    if (latitude !== undefined) updateData.latitude = latitude ? parseFloat(latitude) : null;
+    if (certificateType !== undefined) updateData.certificateType = certificateType;
+    if (landSize !== undefined) updateData.landSize = landSize;
+    if (areaName !== undefined) updateData.areaName = areaName;
+    if (projectName !== undefined) updateData.projectName = projectName;
+    if (zoneUrl !== undefined) updateData.zoneUrl = zoneUrl;
+    if (zoneRtdr !== undefined) updateData.zoneRtdr = zoneRtdr;
+    if (publishDate !== undefined) updateData.publishDate = publishDate ? new Date(publishDate) : null;
+    if (expiredDate !== undefined) updateData.expiredDate = expiredDate ? new Date(expiredDate) : null;
+    if (documentObtained !== undefined) updateData.documentObtained = documentObtained ? new Date(documentObtained) : null;
+    if (originDocument !== undefined) updateData.originDocument = originDocument;
+    if (previousOwner !== undefined) updateData.previousOwner = previousOwner;
+    if (company !== undefined) updateData.company = company;
+
+    await document.update(updateData);
 
     // Log activity
     await logActivity({
@@ -237,13 +330,40 @@ const updateDocumentInfo = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update documents' });
     }
 
-    const { title, location, description, longitude, latitude } = req.body;
+    const { 
+      title, location, description, longitude, latitude,
+      certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
+      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+    } = req.body;
+    
+    // Validate mandatory fields if provided
+    if (certificateType !== undefined && !certificateType) {
+      return res.status(400).json({ message: 'certificateType is required' });
+    }
+    if (publishDate !== undefined && !publishDate) {
+      return res.status(400).json({ message: 'publishDate is required' });
+    }
+    if (company !== undefined && !company) {
+      return res.status(400).json({ message: 'company is required' });
+    }
     
     if (title !== undefined) document.title = title;
     if (location !== undefined) document.location = location;
     if (description !== undefined) document.description = description;
     if (longitude !== undefined) document.longitude = longitude ? parseFloat(longitude) : null;
     if (latitude !== undefined) document.latitude = latitude ? parseFloat(latitude) : null;
+    if (certificateType !== undefined) document.certificateType = certificateType;
+    if (landSize !== undefined) document.landSize = landSize;
+    if (areaName !== undefined) document.areaName = areaName;
+    if (projectName !== undefined) document.projectName = projectName;
+    if (zoneUrl !== undefined) document.zoneUrl = zoneUrl;
+    if (zoneRtdr !== undefined) document.zoneRtdr = zoneRtdr;
+    if (publishDate !== undefined) document.publishDate = publishDate ? new Date(publishDate) : null;
+    if (expiredDate !== undefined) document.expiredDate = expiredDate ? new Date(expiredDate) : null;
+    if (documentObtained !== undefined) document.documentObtained = documentObtained ? new Date(documentObtained) : null;
+    if (originDocument !== undefined) document.originDocument = originDocument;
+    if (previousOwner !== undefined) document.previousOwner = previousOwner;
+    if (company !== undefined) document.company = company;
     
     await document.save();
 
@@ -277,13 +397,40 @@ const updateSubDocumentInfo = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update sub-documents' });
     }
 
-    const { title, location, description, longitude, latitude } = req.body;
+    const { 
+      title, location, description, longitude, latitude,
+      certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
+      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+    } = req.body;
+    
+    // Validate mandatory fields if provided
+    if (certificateType !== undefined && !certificateType) {
+      return res.status(400).json({ message: 'certificateType is required' });
+    }
+    if (publishDate !== undefined && !publishDate) {
+      return res.status(400).json({ message: 'publishDate is required' });
+    }
+    if (company !== undefined && !company) {
+      return res.status(400).json({ message: 'company is required' });
+    }
     
     if (title !== undefined) subDocument.title = title;
     if (location !== undefined) subDocument.location = location;
     if (description !== undefined) subDocument.description = description;
     if (longitude !== undefined) subDocument.longitude = longitude ? parseFloat(longitude) : null;
     if (latitude !== undefined) subDocument.latitude = latitude ? parseFloat(latitude) : null;
+    if (certificateType !== undefined) subDocument.certificateType = certificateType;
+    if (landSize !== undefined) subDocument.landSize = landSize;
+    if (areaName !== undefined) subDocument.areaName = areaName;
+    if (projectName !== undefined) subDocument.projectName = projectName;
+    if (zoneUrl !== undefined) subDocument.zoneUrl = zoneUrl;
+    if (zoneRtdr !== undefined) subDocument.zoneRtdr = zoneRtdr;
+    if (publishDate !== undefined) subDocument.publishDate = publishDate ? new Date(publishDate) : null;
+    if (expiredDate !== undefined) subDocument.expiredDate = expiredDate ? new Date(expiredDate) : null;
+    if (documentObtained !== undefined) subDocument.documentObtained = documentObtained ? new Date(documentObtained) : null;
+    if (originDocument !== undefined) subDocument.originDocument = originDocument;
+    if (previousOwner !== undefined) subDocument.previousOwner = previousOwner;
+    if (company !== undefined) subDocument.company = company;
     
     await subDocument.save();
 

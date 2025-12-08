@@ -1,4 +1,5 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+// Use relative URL so it works through nginx proxy on any domain
+const API_BASE = ''
 
 export type ApiUser = {
   id: number
@@ -23,6 +24,18 @@ export type ApiSubDocument = {
   filePath: string
   parentDocumentId: number
   createdAt?: string
+  certificateType?: string
+  landSize?: string
+  areaName?: string
+  projectName?: string
+  zoneUrl?: string
+  zoneRtdr?: string
+  publishDate?: string
+  expiredDate?: string
+  documentObtained?: string
+  originDocument?: string
+  previousOwner?: string
+  company?: string
 }
 
 export interface ApiDocument {
@@ -38,6 +51,18 @@ export interface ApiDocument {
   createdBy: number
   createdAt: string
   updatedAt: string
+  certificateType?: string
+  landSize?: string
+  areaName?: string
+  projectName?: string
+  zoneUrl?: string
+  zoneRtdr?: string
+  publishDate?: string
+  expiredDate?: string
+  documentObtained?: string
+  originDocument?: string
+  previousOwner?: string
+  company?: string
   subDocuments?: ApiSubDocument[]
 }
 

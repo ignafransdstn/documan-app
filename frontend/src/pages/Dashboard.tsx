@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useLanguage } from '../hooks/useLanguage'
 import * as api from '../api'
 import { useEffect, useState } from 'react'
 import type { Summary, ActivityLog } from '../api'
@@ -8,6 +9,7 @@ import extractErrorMessage from '../utils/extractErrorMessage'
 
 const Dashboard: React.FC = () => {
   const { user, token } = useAuth()
+  const { t } = useLanguage()
   const [summary, setSummary] = useState<Summary | null>(null)
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([])
   const [filterDate, setFilterDate] = useState<string>('')
@@ -64,9 +66,9 @@ const Dashboard: React.FC = () => {
       {/* Welcome Banner */}
       <div className="welcome-banner">
         <div>
-          <h1 className="dashboard-title">Selamat Datang, {user?.username || 'User'}!</h1>
+          <h1 className="dashboard-title">{t('dashboard.welcome')}, {user?.username || 'User'}!</h1>
           <p className="dashboard-subtitle">
-            Anda masuk sebagai {user?.userLevel === 'admin' ? 'Administrator' : `User ${user?.userLevel}`} • Terakhir login: {new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            {t('dashboard.loggedAs')} {user?.userLevel === 'admin' ? t('dashboard.administrator') : `User ${user?.userLevel}`} • {t('dashboard.lastLogin')}: {new Date().toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
       </div>
@@ -81,7 +83,7 @@ const Dashboard: React.FC = () => {
             </svg>
           </div>
           <div className="dash-stat-content">
-            <div className="dash-stat-label">Total Dokumen</div>
+            <div className="dash-stat-label">{t('dashboard.totalDocuments')}</div>
             <div className="dash-stat-value">{totalDocs}</div>
           </div>
         </div>
@@ -94,7 +96,7 @@ const Dashboard: React.FC = () => {
             </svg>
           </div>
           <div className="dash-stat-content">
-            <div className="dash-stat-label">Dokumen Master</div>
+            <div className="dash-stat-label">{t('dashboard.masterDocuments')}</div>
             <div className="dash-stat-value">{masterDocs}</div>
           </div>
         </div>
@@ -107,7 +109,7 @@ const Dashboard: React.FC = () => {
             </svg>
           </div>
           <div className="dash-stat-content">
-            <div className="dash-stat-label">Sub Dokumen</div>
+            <div className="dash-stat-label">{t('dashboard.subDocuments')}</div>
             <div className="dash-stat-value">{subDocs}</div>
           </div>
         </div>

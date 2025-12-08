@@ -77,7 +77,7 @@ const options = {
             },
             title: {
               type: 'string',
-              description: 'Document title'
+              description: 'Document title (mandatory)'
             },
             filePath: {
               type: 'string',
@@ -85,12 +85,66 @@ const options = {
             },
             location: {
               type: 'string',
-              description: 'Document location/category'
+              description: 'Document location/category (mandatory)'
             },
             status: {
               type: 'string',
               enum: ['active', 'archived', 'deleted'],
               description: 'Document status'
+            },
+            certificateType: {
+              type: 'string',
+              enum: ['SHM', 'SHGB', 'SHGU', 'SHP', 'HPL', 'AJB', 'Girik', 'Others'],
+              description: 'Certificate type (mandatory)'
+            },
+            landSize: {
+              type: 'string',
+              description: 'Land size measurement (optional, e.g., "500 m²")'
+            },
+            areaName: {
+              type: 'string',
+              description: 'Area name or zone designation (optional)'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Associated project name (optional)'
+            },
+            zoneUrl: {
+              type: 'string',
+              format: 'uri',
+              description: 'Maps/location URL for the property (optional)'
+            },
+            zoneRtdr: {
+              type: 'string',
+              description: 'RT/RW designation or zone code (optional)'
+            },
+            publishDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Certificate publication date in YYYY-MM-DD format (mandatory)'
+            },
+            expiredDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Certificate expiration date in YYYY-MM-DD format (optional)'
+            },
+            documentObtained: {
+              type: 'string',
+              format: 'date',
+              description: 'Date document was obtained in YYYY-MM-DD format (optional)'
+            },
+            originDocument: {
+              type: 'string',
+              description: 'Original document reference or serial number (optional)'
+            },
+            previousOwner: {
+              type: 'string',
+              description: 'Previous property owner name or entity (optional)'
+            },
+            company: {
+              type: 'string',
+              enum: ['JH', 'JHT', 'BEP', 'PIJ'],
+              description: 'Associated company code (mandatory)'
             },
             createdBy: {
               type: 'integer',
@@ -149,6 +203,60 @@ const options = {
             location: {
               type: 'string',
               description: 'Sub-document location/category'
+            },
+            certificateType: {
+              type: 'string',
+              enum: ['SHM', 'SHGB', 'SHGU', 'SHP', 'HPL', 'AJB', 'Girik', 'Others'],
+              description: 'Certificate type for sub-document'
+            },
+            landSize: {
+              type: 'string',
+              description: 'Land size measurement for sub-document'
+            },
+            areaName: {
+              type: 'string',
+              description: 'Area name or zone designation for sub-document'
+            },
+            projectName: {
+              type: 'string',
+              description: 'Associated project name for sub-document'
+            },
+            zoneUrl: {
+              type: 'string',
+              format: 'uri',
+              description: 'Maps/location URL for the sub-document property'
+            },
+            zoneRtdr: {
+              type: 'string',
+              description: 'RT/RW designation or zone code for sub-document'
+            },
+            publishDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Certificate publication date in YYYY-MM-DD format'
+            },
+            expiredDate: {
+              type: 'string',
+              format: 'date',
+              description: 'Certificate expiration date in YYYY-MM-DD format'
+            },
+            documentObtained: {
+              type: 'string',
+              format: 'date',
+              description: 'Date document was obtained in YYYY-MM-DD format'
+            },
+            originDocument: {
+              type: 'string',
+              description: 'Original document reference or serial number'
+            },
+            previousOwner: {
+              type: 'string',
+              description: 'Previous property owner name or entity'
+            },
+            company: {
+              type: 'string',
+              enum: ['JH', 'JHT', 'BEP', 'PIJ'],
+              description: 'Associated company code'
             },
             status: {
               type: 'string',

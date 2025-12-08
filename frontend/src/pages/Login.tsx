@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useLanguage } from '../hooks/useLanguage'
 import * as api from '../api'
 import extractErrorMessage from '../utils/extractErrorMessage'
 
 const Login: React.FC = () => {
+  const { t } = useLanguage()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -65,55 +67,55 @@ const Login: React.FC = () => {
 
   return (
     <div className="card auth-card">
-      <h2>Sign in</h2>
+      <h2>{t('auth.signIn')}</h2>
       <form onSubmit={handleSubmit} className="form">
         <label>
-          Username
+          {t('auth.username')}
           <input value={username} onChange={(e) => setUsername(e.target.value)} required />
         </label>
         <label>
-          Password
+          {t('auth.password')}
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </label>
         {error && <div className="error">{error}</div>}
-        <button type="submit" className="btn primary" disabled={loading}>{loading ? 'Signing...' : 'Sign in'}</button>
+        <button type="submit" className="btn primary" disabled={loading}>{loading ? t('auth.signing') : t('auth.signIn')}</button>
       </form>
-      <div className="hint"><strong>Need an account? Create one below</strong></div>
+      <div className="hint"><strong>{t('auth.needAccount')}</strong></div>
       <hr />
-      <button className="btn" onClick={() => setShowSignup(!showSignup)}>{showSignup ? 'Hide register' : 'Create account'}</button>
+      <button className="btn" onClick={() => setShowSignup(!showSignup)}>{showSignup ? t('auth.hideRegister') : t('auth.createAccount')}</button>
 
       {showSignup && (
         <div className="signup">
-          <h3>Create account</h3>
+          <h3>{t('auth.createAccount')}</h3>
           <form onSubmit={handleSignup} className="form">
             <label>
-              Username
+              {t('auth.username')}
               <input value={suUsername} onChange={(e) => setSuUsername(e.target.value)} required />
             </label>
             <label>
-              Password
+              {t('auth.password')}
               <input type="password" value={suPassword} onChange={(e) => setSuPassword(e.target.value)} required />
             </label>
             <label>
-              Full name
+              {t('auth.fullName')}
               <input value={suName} onChange={(e) => setSuName(e.target.value)} />
             </label>
             <label>
-              Email
+              {t('auth.email')}
               <input type="email" value={suEmail} onChange={(e) => setSuEmail(e.target.value)} required />
             </label>
             <label>
-              Access Level
+              {t('auth.accessLevel')}
               <select value={suLevel} onChange={(e) => setSuLevel(e.target.value)}>
-                <option value="admin">Admin / Super admin</option>
-                <option value="level1">Level 1</option>
-                <option value="level2">Level 2</option>
-                <option value="level3">Level 3</option>
+                <option value="admin">{t('auth.adminSuperAdmin')}</option>
+                <option value="level1">{t('auth.level1')}</option>
+                <option value="level2">{t('auth.level2')}</option>
+                <option value="level3">{t('auth.level3')}</option>
               </select>
             </label>
             {suError && <div className="error">{suError}</div>}
             {suSuccess && <div className="success">{suSuccess}</div>}
-            <button type="submit" className="btn">Register</button>
+            <button type="submit" className="btn">{t('auth.register')}</button>
           </form>
         </div>
       )}

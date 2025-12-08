@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { useLanguage } from '../hooks/useLanguage'
 import * as api from '../api'
 import type { ApiUser } from '../api'
 import extractErrorMessage from '../utils/extractErrorMessage'
 
 const UsersPage: React.FC = () => {
   const { token, user } = useAuth()
+  const { t } = useLanguage()
   const [users, setUsers] = useState<ApiUser[]>([])
   const [loading, setLoading] = useState(false)
   const [approving, setApproving] = useState<number | null>(null)
@@ -33,7 +35,7 @@ const UsersPage: React.FC = () => {
   }, [token])
 
   if (!user || user.userLevel !== 'admin') {
-    return <div className="card"><h3>Not authorized</h3><p>Only admin can access user management</p></div>
+    return <div className="card"><h3>{t('auth.notAuthorized')}</h3><p>{t('auth.onlyAdminCanAccess')}</p></div>
   }
 
   // Calculate statistics
@@ -58,8 +60,8 @@ const UsersPage: React.FC = () => {
     <div className="users-page-container">
       <div className="users-header">
         <div>
-          <h1 className="users-main-title">Manajemen Pengguna</h1>
-          <p className="users-subtitle">Kelola pengguna dan hak akses sistem</p>
+          <h1 className="users-main-title">{t('users.management')}</h1>
+          <p className="users-subtitle">{t('users.subtitle')}</p>
         </div>
       </div>
       
@@ -74,7 +76,7 @@ const UsersPage: React.FC = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <div className="stat-label">Total Pengguna</div>
+            <div className="stat-label">{t('users.totalUsers')}</div>
             <div className="stat-value">{totalUsers}</div>
           </div>
         </div>
@@ -88,7 +90,7 @@ const UsersPage: React.FC = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <div className="stat-label">Pengguna Aktif</div>
+            <div className="stat-label">{t('users.activeUsers')}</div>
             <div className="stat-value">{activeUsers}</div>
           </div>
         </div>
@@ -101,7 +103,7 @@ const UsersPage: React.FC = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <div className="stat-label">Administrator</div>
+            <div className="stat-label">{t('users.administrators')}</div>
             <div className="stat-value">{adminUsers}</div>
           </div>
         </div>
@@ -115,7 +117,7 @@ const UsersPage: React.FC = () => {
             </svg>
           </div>
           <div className="stat-content">
-            <div className="stat-label">Tidak Aktif</div>
+            <div className="stat-label">{t('users.inactiveUsers')}</div>
             <div className="stat-value">{inactiveUsers}</div>
           </div>
         </div>

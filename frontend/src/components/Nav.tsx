@@ -1,9 +1,12 @@
 import React from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useLanguage } from '../hooks/useLanguage'
+import LanguageSwitcher from './LanguageSwitcher'
 
 const Nav: React.FC = () => {
   const { user, logout } = useAuth()
+  const { t } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -27,20 +30,20 @@ const Nav: React.FC = () => {
             to="/dashboard" 
             className={isActive('/dashboard') ? 'active' : ''}
           >
-            Dashboard
+            {t('nav.dashboard')}
           </Link>
           <Link 
             to="/documents" 
             className={isActive('/documents') ? 'active' : ''}
           >
-            Documents
+            {t('nav.documents')}
           </Link>
           {user?.userLevel === 'admin' && (
             <Link 
               to="/users" 
               className={isActive('/users') ? 'active' : ''}
             >
-              Users
+              {t('nav.users')}
             </Link>
           )}
         </nav>
@@ -48,8 +51,9 @@ const Nav: React.FC = () => {
       <div className="nav-actions">
         {user && (
           <>
+            <LanguageSwitcher />
             <span className="muted">{user.username}</span>
-            <button className="btn ghost" onClick={onLogout}>Sign out</button>
+            <button className="btn ghost" onClick={onLogout}>{t('nav.signOut')}</button>
           </>
         )}
       </div>

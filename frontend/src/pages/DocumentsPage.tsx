@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import * as api from '../api'
 import type { ApiDocument } from '../api'
 import { useAuth } from '../hooks/useAuth'
+import { useLanguage } from '../hooks/useLanguage'
 import extractErrorMessage from '../utils/extractErrorMessage'
 
 const DocumentsPage: React.FC = () => {
   const { token } = useAuth()
+  const { t } = useLanguage()
   const [docs, setDocs] = useState<ApiDocument[]>([])
   const [loading, setLoading] = useState(false)
   const [file, setFile] = useState<File | null>(null)
@@ -14,18 +16,42 @@ const DocumentsPage: React.FC = () => {
   const [longitude, setLongitude] = useState('')
   const [latitude, setLatitude] = useState('')
   const [description, setDescription] = useState('')
+  const [certificateType, setCertificateType] = useState('')
+  const [landSize, setLandSize] = useState('')
+  const [areaName, setAreaName] = useState('')
+  const [projectName, setProjectName] = useState('')
+  const [zoneUrl, setZoneUrl] = useState('')
+  const [zoneRtdr, setZoneRtdr] = useState('')
+  const [publishDate, setPublishDate] = useState('')
+  const [expiredDate, setExpiredDate] = useState('')
+  const [documentObtained, setDocumentObtained] = useState('')
+  const [originDocument, setOriginDocument] = useState('')
+  const [previousOwner, setPreviousOwner] = useState('')
+  const [company, setCompany] = useState('')
   const [documentType, setDocumentType] = useState<'master' | 'sub'>('master')
   const [subDocumentNo, setSubDocumentNo] = useState('')
   const [parentDocumentId, setParentDocumentId] = useState('')
   const [expandedDocs, setExpandedDocs] = useState<Set<number>>(new Set())
   const [editingSubDoc, setEditingSubDoc] = useState<{ id: number; currentNo: string } | null>(null)
   const [newSubDocNo, setNewSubDocNo] = useState('')
-  const [editingDoc, setEditingDoc] = useState<{ id: number; title: string; location: string; longitude?: number | null; latitude?: number | null; description: string; type: 'master' | 'sub' } | null>(null)
+  const [editingDoc, setEditingDoc] = useState<{ id: number; title: string; location: string; longitude?: number | null; latitude?: number | null; description: string; type: 'master' | 'sub'; certificateType?: string; landSize?: string; areaName?: string; projectName?: string; zoneUrl?: string; zoneRtdr?: string; publishDate?: string; expiredDate?: string; documentObtained?: string; originDocument?: string; previousOwner?: string; company?: string } | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editLocation, setEditLocation] = useState('')
   const [editLongitude, setEditLongitude] = useState('')
   const [editLatitude, setEditLatitude] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editCertificateType, setEditCertificateType] = useState('')
+  const [editLandSize, setEditLandSize] = useState('')
+  const [editAreaName, setEditAreaName] = useState('')
+  const [editProjectName, setEditProjectName] = useState('')
+  const [editZoneUrl, setEditZoneUrl] = useState('')
+  const [editZoneRtdr, setEditZoneRtdr] = useState('')
+  const [editPublishDate, setEditPublishDate] = useState('')
+  const [editExpiredDate, setEditExpiredDate] = useState('')
+  const [editDocumentObtained, setEditDocumentObtained] = useState('')
+  const [editOriginDocument, setEditOriginDocument] = useState('')
+  const [editPreviousOwner, setEditPreviousOwner] = useState('')
+  const [editCompany, setEditCompany] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [masterFilter, setMasterFilter] = useState<'all' | 'master-only' | 'master-with-subs'>('all')
   const [showUploadForm, setShowUploadForm] = useState(false)
@@ -102,6 +128,28 @@ const DocumentsPage: React.FC = () => {
     e.preventDefault()
     if (!file) return
     
+    // Validate mandatory fields
+    if (!title) {
+      alert(`${t('forms.title')} ${t('forms.required')}`)
+      return
+    }
+    if (!location) {
+      alert(`${t('forms.location')} ${t('forms.required')}`)
+      return
+    }
+    if (!certificateType) {
+      alert(t('forms.certTypeRequired'))
+      return
+    }
+    if (!publishDate) {
+      alert(t('forms.publishDateRequired'))
+      return
+    }
+    if (!company) {
+      alert(t('forms.companyRequired'))
+      return
+    }
+    
     // Validate PDF file
     if (file.type !== 'application/pdf') {
       alert('Hanya file PDF yang diperbolehkan!')
@@ -115,6 +163,18 @@ const DocumentsPage: React.FC = () => {
     if (longitude) fd.append('longitude', longitude)
     if (latitude) fd.append('latitude', latitude)
     fd.append('description', description)
+    fd.append('certificateType', certificateType)
+    if (landSize) fd.append('landSize', landSize)
+    if (areaName) fd.append('areaName', areaName)
+    if (projectName) fd.append('projectName', projectName)
+    if (zoneUrl) fd.append('zoneUrl', zoneUrl)
+    if (zoneRtdr) fd.append('zoneRtdr', zoneRtdr)
+    fd.append('publishDate', publishDate)
+    if (expiredDate) fd.append('expiredDate', expiredDate)
+    if (documentObtained) fd.append('documentObtained', documentObtained)
+    if (originDocument) fd.append('originDocument', originDocument)
+    if (previousOwner) fd.append('previousOwner', previousOwner)
+    fd.append('company', company)
     
     try {
       if (documentType === 'master') {
@@ -144,6 +204,18 @@ const DocumentsPage: React.FC = () => {
       setLongitude('')
       setLatitude('')
       setDescription('')
+      setCertificateType('')
+      setLandSize('')
+      setAreaName('')
+      setProjectName('')
+      setZoneUrl('')
+      setZoneRtdr('')
+      setPublishDate('')
+      setExpiredDate('')
+      setDocumentObtained('')
+      setOriginDocument('')
+      setPreviousOwner('')
+      setCompany('')
       setFile(null)
       setDocumentType('master')
       setSubDocumentNo('')
@@ -215,13 +287,25 @@ const DocumentsPage: React.FC = () => {
     }
   }
 
-  const openDocEditModal = (id: number, title: string, location: string, description: string, type: 'master' | 'sub', longitude?: number | null, latitude?: number | null) => {
-    setEditingDoc({ id, title, location, longitude, latitude, description, type })
+  const openDocEditModal = (id: number, title: string, location: string, description: string, type: 'master' | 'sub', longitude?: number | null, latitude?: number | null, certificateType?: string, landSize?: string, areaName?: string, projectName?: string, zoneUrl?: string, zoneRtdr?: string, publishDate?: string, expiredDate?: string, documentObtained?: string, originDocument?: string, previousOwner?: string, company?: string) => {
+    setEditingDoc({ id, title, location, longitude, latitude, description, type, certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr, publishDate, expiredDate, documentObtained, originDocument, previousOwner, company })
     setEditTitle(title)
     setEditLocation(location)
     setEditLongitude(longitude?.toString() || '')
     setEditLatitude(latitude?.toString() || '')
     setEditDescription(description)
+    setEditCertificateType(certificateType || '')
+    setEditLandSize(landSize || '')
+    setEditAreaName(areaName || '')
+    setEditProjectName(projectName || '')
+    setEditZoneUrl(zoneUrl || '')
+    setEditZoneRtdr(zoneRtdr || '')
+    setEditPublishDate(publishDate || '')
+    setEditExpiredDate(expiredDate || '')
+    setEditDocumentObtained(documentObtained || '')
+    setEditOriginDocument(originDocument || '')
+    setEditPreviousOwner(previousOwner || '')
+    setEditCompany(company || '')
   }
 
   function closeDocEditModal() {
@@ -231,6 +315,18 @@ const DocumentsPage: React.FC = () => {
     setEditLongitude('')
     setEditLatitude('')
     setEditDescription('')
+    setEditCertificateType('')
+    setEditLandSize('')
+    setEditAreaName('')
+    setEditProjectName('')
+    setEditZoneUrl('')
+    setEditZoneRtdr('')
+    setEditPublishDate('')
+    setEditExpiredDate('')
+    setEditDocumentObtained('')
+    setEditOriginDocument('')
+    setEditPreviousOwner('')
+    setEditCompany('')
   }
 
   async function handleUpdateDocInfo(e: React.FormEvent) {
@@ -243,7 +339,19 @@ const DocumentsPage: React.FC = () => {
         location: editLocation,
         description: editDescription,
         longitude: editLongitude || undefined,
-        latitude: editLatitude || undefined
+        latitude: editLatitude || undefined,
+        certificateType: editCertificateType || undefined,
+        landSize: editLandSize || undefined,
+        areaName: editAreaName || undefined,
+        projectName: editProjectName || undefined,
+        zoneUrl: editZoneUrl || undefined,
+        zoneRtdr: editZoneRtdr || undefined,
+        publishDate: editPublishDate || undefined,
+        expiredDate: editExpiredDate || undefined,
+        documentObtained: editDocumentObtained || undefined,
+        originDocument: editOriginDocument || undefined,
+        previousOwner: editPreviousOwner || undefined,
+        company: editCompany || undefined
       }
       
       if (editingDoc.type === 'master') {
@@ -293,7 +401,7 @@ const DocumentsPage: React.FC = () => {
         throw new Error('No authentication token available')
       }
 
-      const baseURL = 'http://localhost:5001'
+      const baseURL = ''
       const endpoint = type === 'master' ? `/api/documents/download/${id}` : `/api/documents/sub-document/download/${id}`
       const fullUrl = `${baseURL}${endpoint}`
       
@@ -434,28 +542,28 @@ const DocumentsPage: React.FC = () => {
             <label>
               Document Type
               <select value={documentType} onChange={(e) => setDocumentType(e.target.value as 'master' | 'sub')}>
-                <option value="master">Master Document</option>
-                <option value="sub">Sub Document</option>
+                <option value="master">{t('documents.list')}</option>
+                <option value="sub">Sub-Document</option>
               </select>
             </label>
 
             {documentType === 'sub' && (
               <>
                 <label>
-                  Master Document
+                  {t('forms.masterDocument')}
                   <select value={parentDocumentId} onChange={(e) => setParentDocumentId(e.target.value)} required>
-                    <option value="">-- Select Master Document --</option>
+                    <option value="">{t('forms.selectMasterDocument')}</option>
                     {docs.map((d) => (
                       <option key={d.id} value={d.id}>{d.title}</option>
                     ))}
                   </select>
                 </label>
                 <label>
-                  Sub Document No
+                  {t('forms.subDocumentNo')}
                   <input 
                     value={subDocumentNo} 
                     onChange={(e) => setSubDocumentNo(e.target.value)} 
-                    placeholder="e.g., 1 or 001 (will be formatted to SUB-001)"
+                    placeholder={t('forms.subDocumentPlaceholder')}
                     required 
                   />
                 </label>
@@ -463,11 +571,11 @@ const DocumentsPage: React.FC = () => {
             )}
 
             <label>
-              Title
+              <span>{t('forms.title')} <span style={{ color: '#dc2626' }}>*</span></span>
               <input value={title} onChange={(e) => setTitle(e.target.value)} required />
             </label>
             <label>
-              Location
+              <span>{t('forms.location')} <span style={{ color: '#dc2626' }}>*</span></span>
               <input value={location} onChange={(e) => setLocation(e.target.value)} required />
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -493,11 +601,11 @@ const DocumentsPage: React.FC = () => {
               </label>
             </div>
             <label>
-              Description
+              {t('forms.description')}
               <textarea 
                 value={description} 
                 onChange={(e) => setDescription(e.target.value)} 
-                placeholder="Deskripsi dokumen (maksimal 350 karakter)"
+                placeholder={t('forms.descriptionPlaceholder')}
                 maxLength={350}
                 rows={4}
                 style={{ 
@@ -515,8 +623,135 @@ const DocumentsPage: React.FC = () => {
                 {description.length}/350 karakter
               </span>
             </label>
+
+            {/* NEW CERTIFICATE & PROPERTY FIELDS */}
             <label>
-              File (PDF Only)
+              <span>{t('forms.certificateType')} <span style={{ color: '#ff6b6b' }}>*</span></span>
+              <select value={certificateType} onChange={(e) => setCertificateType(e.target.value)} required>
+                <option value="">{t('forms.selectCertificate')}</option>
+                <option value="SHM">SHM</option>
+                <option value="SHGB">SHGB</option>
+                <option value="SHGU">SHGU</option>
+                <option value="SHP">SHP</option>
+                <option value="HPL">HPL</option>
+                <option value="AJB">AJB</option>
+                <option value="Girik">Girik/Petok D/Letter C</option>
+                <option value="Others">Others</option>
+              </select>
+            </label>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <label>
+                {t('forms.landSize')}
+                <input 
+                  value={landSize} 
+                  onChange={(e) => setLandSize(e.target.value)} 
+                  placeholder={t('forms.landSizePlaceholder')}
+                />
+              </label>
+              <label>
+                {t('forms.areaName')}
+                <input 
+                  value={areaName} 
+                  onChange={(e) => setAreaName(e.target.value)} 
+                  placeholder={t('forms.areaNamePlaceholder')}
+                />
+              </label>
+            </div>
+
+            <label>
+              {t('forms.projectName')}
+              <input 
+                value={projectName} 
+                onChange={(e) => setProjectName(e.target.value)} 
+                placeholder={t('forms.projectNamePlaceholder')}
+              />
+            </label>
+
+            <label>
+              {t('forms.zoneUrl')}
+              <input 
+                value={zoneUrl} 
+                onChange={(e) => setZoneUrl(e.target.value)} 
+                placeholder="https://..."
+              />
+            </label>
+
+            <label>
+              {t('forms.zoneRtdr')}
+              <input 
+                value={zoneRtdr} 
+                onChange={(e) => setZoneRtdr(e.target.value)} 
+                placeholder="e.g., (W) Pariwisata"
+              />
+            </label>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <label>
+                <div style={{ marginBottom: '0.5rem' }}>
+                  {t('forms.publishDate')} <span style={{ color: '#ff6b6b' }}>*</span>
+                </div>
+                <input 
+                  type="date"
+                  value={publishDate} 
+                  onChange={(e) => setPublishDate(e.target.value)} 
+                  required
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </label>
+              <label>
+                <div style={{ marginBottom: '0.5rem' }}>
+                  {t('forms.expiredDate')}
+                </div>
+                <input 
+                  type="date"
+                  value={expiredDate} 
+                  onChange={(e) => setExpiredDate(e.target.value)}
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                />
+              </label>
+            </div>
+
+            <label>
+              {t('forms.documentObtained')}
+              <input 
+                type="date"
+                value={documentObtained} 
+                onChange={(e) => setDocumentObtained(e.target.value)} 
+              />
+            </label>
+
+            <label>
+              {t('forms.originDocument')}
+              <input 
+                value={originDocument} 
+                onChange={(e) => setOriginDocument(e.target.value)} 
+                placeholder="e.g., AJB No. 292/2011 Notaris Dewi Eka Koreati"
+              />
+            </label>
+
+            <label>
+              {t('forms.previousOwner')}
+              <input 
+                value={previousOwner} 
+                onChange={(e) => setPreviousOwner(e.target.value)} 
+                placeholder="e.g., PT. Citratama Selaras"
+              />
+            </label>
+
+            <label>
+              <span>Company <span style={{ color: '#ff6b6b' }}>*</span></span>
+              <select value={company} onChange={(e) => setCompany(e.target.value)} required>
+                <option value="">-- Pilih Perusahaan --</option>
+                <option value="JH">JH</option>
+                <option value="JHT">JHT</option>
+                <option value="BEP">BEP</option>
+                <option value="PIJ">PIJ</option>
+              </select>
+            </label>
+
+            <label>
+              {t('forms.filePdf')}
               <input 
                 type="file" 
                 accept=".pdf,application/pdf"
@@ -525,8 +760,8 @@ const DocumentsPage: React.FC = () => {
               />
             </label>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <button className="btn primary" type="submit">Upload</button>
-              <button className="btn ghost" type="button" onClick={() => setShowUploadForm(false)}>Batal</button>
+              <button className="btn primary" type="submit">{t('buttons.upload')}</button>
+              <button className="btn ghost" type="button" onClick={() => setShowUploadForm(false)}>{t('buttons.cancel')}</button>
             </div>
           </form>
         </div>
@@ -534,13 +769,13 @@ const DocumentsPage: React.FC = () => {
 
       {/* Documents List */}
       <div className="card" style={{ marginTop: '1.5rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>Daftar Dokumen ({filteredDocs.length})</h3>
+        <h3 style={{ marginBottom: '1rem' }}>{t('documents.documentList')} ({filteredDocs.length})</h3>
 
       {loading ? (
         <p>Loading...</p>
       ) : paginatedDocs.length === 0 ? (
         <p className="muted" style={{ textAlign: 'center', padding: '2rem' }}>
-          {searchQuery ? 'Tidak ada dokumen yang sesuai dengan pencarian' : 'Belum ada dokumen'}
+          {searchQuery ? t('documents.noMatchingDocuments') : t('documents.noDocumentsYet')}
         </p>
       ) : (
         <>
@@ -586,6 +821,92 @@ const DocumentsPage: React.FC = () => {
                       </div>
                     )}
                     {d.description && <div className="doc-description">{d.description}</div>}
+                    
+                    {/* Certificate & Property Information */}
+                    {(d.certificateType || d.landSize || d.areaName || d.projectName || d.zoneUrl || d.zoneRtdr || d.publishDate || d.expiredDate || d.documentObtained || d.originDocument || d.previousOwner || d.company) && (
+                      <div style={{ 
+                        marginTop: '0.75rem',
+                        paddingTop: '0.75rem',
+                        borderTop: '1px solid #e0e4e8',
+                        fontSize: '0.85rem'
+                      }}>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem 1rem' }}>
+                          {d.certificateType && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tipe Sertifikat:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.certificateType}</div>
+                            </div>
+                          )}
+                          {d.landSize && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Luas Tanah:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.landSize}</div>
+                            </div>
+                          )}
+                          {d.areaName && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Nama Area:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.areaName}</div>
+                            </div>
+                          )}
+                          {d.projectName && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Nama Proyek:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.projectName}</div>
+                            </div>
+                          )}
+                          {d.zoneUrl && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>URL Zone:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.zoneUrl}</div>
+                            </div>
+                          )}
+                          {d.zoneRtdr && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Zone RTDR:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.zoneRtdr}</div>
+                            </div>
+                          )}
+                          {d.publishDate && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tanggal Diterbitkan:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{new Date(d.publishDate).toLocaleDateString('id-ID')}</div>
+                            </div>
+                          )}
+                          {d.expiredDate && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tanggal Kadaluarsa:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{new Date(d.expiredDate).toLocaleDateString('id-ID')}</div>
+                            </div>
+                          )}
+                          {d.documentObtained && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tanggal Dokumen Diperoleh:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{new Date(d.documentObtained).toLocaleDateString('id-ID')}</div>
+                            </div>
+                          )}
+                          {d.previousOwner && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Pemilik Sebelumnya:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.previousOwner}</div>
+                            </div>
+                          )}
+                          {d.company && (
+                            <div>
+                              <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Perusahaan:</span>
+                              <div style={{ color: '#1d2e4a', marginTop: '0.1rem' }}>{d.company}</div>
+                            </div>
+                          )}
+                        </div>
+                        {d.originDocument && (
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Keterangan Dokumen Asli:</span>
+                            <div style={{ color: '#1d2e4a', marginTop: '0.1rem', whiteSpace: 'pre-wrap' }}>{d.originDocument}</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {d.subDocuments && d.subDocuments.length > 0 && (
                       <div className="doc-count">
                         <span className="doc-count-number">{d.subDocuments.length}</span>
@@ -596,26 +917,26 @@ const DocumentsPage: React.FC = () => {
                 </div>
                 <div className="doc-actions">
                   <button 
-                    onClick={() => openDocEditModal(d.id, d.title, d.location, d.description || '', 'master', d.longitude, d.latitude)}
+                    onClick={() => openDocEditModal(d.id, d.title, d.location, d.description || '', 'master', d.longitude, d.latitude, d.certificateType, d.landSize, d.areaName, d.projectName, d.zoneUrl, d.zoneRtdr, d.publishDate, d.expiredDate, d.documentObtained, d.originDocument, d.previousOwner, d.company)}
                     className="btn ghost"
                     title="Edit document"
                   >
-                    ✏️ Edit
+                    ✏️ {t('buttons.edit')}
                   </button>
                   <button 
                     onClick={() => handleViewDocument(d.id, 'master', d.title)}
                     className="btn ghost"
                     title="View document"
                   >
-                    👁️ View
+                    👁️ {t('buttons.view')}
                   </button>
-                  <button onClick={() => handleDownloadDocument(d.id)} className="btn">Download</button>
+                  <button onClick={() => handleDownloadDocument(d.id)} className="btn">{t('buttons.download')}</button>
                   <button 
                     onClick={() => openDeleteConfirm(d.id, 'master', d.title, (d.subDocuments?.length || 0) > 0)}
                     className="btn small danger"
                     title="Delete document"
                   >
-                    🗑️ Delete
+                    🗑️ {t('buttons.delete')}
                   </button>
                 </div>
               </div>
@@ -659,10 +980,59 @@ const DocumentsPage: React.FC = () => {
                           </div>
                         )}
                         {sub.description && <div className="subdoc-description">{sub.description}</div>}
+                        
+                        {/* Certificate & Property Information for Sub-Documents */}
+                        {(sub.certificateType || sub.landSize || sub.areaName || sub.projectName || sub.zoneUrl || sub.zoneRtdr || sub.publishDate || sub.expiredDate || sub.documentObtained || sub.originDocument || sub.previousOwner || sub.company) && (
+                          <div style={{ 
+                            marginTop: '0.5rem',
+                            paddingTop: '0.5rem',
+                            borderTop: '1px solid #e0e4e8',
+                            fontSize: '0.8rem'
+                          }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem 0.8rem' }}>
+                              {sub.certificateType && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tipe:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.certificateType}</div>
+                                </div>
+                              )}
+                              {sub.landSize && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Luas:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.landSize}</div>
+                                </div>
+                              )}
+                              {sub.areaName && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Area:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.areaName}</div>
+                                </div>
+                              )}
+                              {sub.projectName && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Proyek:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.projectName}</div>
+                                </div>
+                              )}
+                              {sub.company && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Perusahaan:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.company}</div>
+                                </div>
+                              )}
+                              {sub.publishDate && (
+                                <div>
+                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Diterbitkan:</span>
+                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{new Date(sub.publishDate).toLocaleDateString('id-ID')}</div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="doc-actions">
                         <button 
-                          onClick={() => openDocEditModal(sub.id, sub.title, sub.location, sub.description || '', 'sub', sub.longitude, sub.latitude)}
+                          onClick={() => openDocEditModal(sub.id, sub.title, sub.location, sub.description || '', 'sub', sub.longitude, sub.latitude, sub.certificateType, sub.landSize, sub.areaName, sub.projectName, sub.zoneUrl, sub.zoneRtdr, sub.publishDate, sub.expiredDate, sub.documentObtained, sub.originDocument, sub.previousOwner, sub.company)}
                           className="btn ghost"
                           title="Edit sub-document"
                           style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
@@ -677,7 +1047,7 @@ const DocumentsPage: React.FC = () => {
                         >
                           👁️
                         </button>
-                        <button onClick={() => handleDownloadSubDocument(sub.id)} className="btn">Download</button>
+                        <button onClick={() => handleDownloadSubDocument(sub.id)} className="btn">{t('buttons.download')}</button>
                         <button 
                           onClick={() => openDeleteConfirm(sub.id, 'sub', sub.title)}
                           className="btn small danger"
@@ -704,13 +1074,13 @@ const DocumentsPage: React.FC = () => {
               className="btn small ghost"
               style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
             >
-              ← Sebelumnya
+              ← {t('buttons.previous')}
             </button>
             
             <div className="pagination-info">
-              Halaman {currentPage} dari {totalPages}
+              {t('pagination.page')} {currentPage} {t('pagination.of')} {totalPages}
               <span className="muted" style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}>
-                ({startIndex + 1}-{Math.min(endIndex, filteredDocs.length)} dari {filteredDocs.length})
+                ({startIndex + 1}-{Math.min(endIndex, filteredDocs.length)} {t('pagination.of')} {filteredDocs.length})
               </span>
             </div>
             
@@ -720,7 +1090,7 @@ const DocumentsPage: React.FC = () => {
               className="btn small ghost"
               style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
             >
-              Selanjutnya →
+              {t('buttons.next')} →
             </button>
           </div>
         )}
@@ -732,23 +1102,23 @@ const DocumentsPage: React.FC = () => {
       {editingSubDoc && (
         <div className="modal-overlay" onClick={closeEditModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Edit Sub-Document Number</h3>
-            <p className="muted">Current: {editingSubDoc.currentNo}</p>
+            <h3>{t('modals.editSubDocumentNo')}</h3>
+            <p className="muted">{t('modals.currentNo')} {editingSubDoc.currentNo}</p>
             <form onSubmit={handleUpdateSubDocNumber}>
               <label>
-                New Number
+                {t('modals.newNumber')}
                 <input 
                   type="text" 
                   value={newSubDocNo} 
                   onChange={(e) => setNewSubDocNo(e.target.value)}
-                  placeholder="e.g., 1 or 001 (will be formatted to SUB-XXX)"
+                  placeholder={t('modals.newNumberPlaceholder')}
                   required
                   autoFocus
                 />
               </label>
               <div className="modal-actions">
-                <button type="button" onClick={closeEditModal} className="btn ghost">Cancel</button>
-                <button type="submit" className="btn primary">Update</button>
+                <button type="button" onClick={closeEditModal} className="btn ghost">{t('buttons.cancel')}</button>
+                <button type="submit" className="btn primary">{t('buttons.update')}</button>
               </div>
             </form>
           </div>
@@ -759,10 +1129,10 @@ const DocumentsPage: React.FC = () => {
       {editingDoc && (
         <div className="modal-overlay" onClick={closeDocEditModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>Edit {editingDoc.type === 'master' ? 'Document' : 'Sub-Document'}</h3>
+            <h3>{t('modals.editDocument')}</h3>
             <form onSubmit={handleUpdateDocInfo}>
               <label>
-                Title
+                {t('forms.title')}
                 <input 
                   type="text" 
                   value={editTitle} 
@@ -772,7 +1142,7 @@ const DocumentsPage: React.FC = () => {
                 />
               </label>
               <label>
-                Location
+                {t('forms.location')}
                 <input 
                   type="text" 
                   value={editLocation} 
@@ -782,7 +1152,7 @@ const DocumentsPage: React.FC = () => {
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <label>
-                  Longitude (Opsional)
+                  {t('forms.longitude')}
                   <input 
                     type="number" 
                     step="any" 
@@ -792,7 +1162,7 @@ const DocumentsPage: React.FC = () => {
                   />
                 </label>
                 <label>
-                  Latitude (Opsional)
+                  {t('forms.latitude')}
                   <input 
                     type="number" 
                     step="any" 
@@ -803,13 +1173,13 @@ const DocumentsPage: React.FC = () => {
                 </label>
               </div>
               <label>
-                Deskripsi (opsional)
+                {t('forms.description')}
                 <textarea 
                   value={editDescription} 
                   onChange={(e) => setEditDescription(e.target.value)}
                   maxLength={350}
                   rows={4}
-                  placeholder="Tambahkan deskripsi dokumen (maksimal 350 karakter)"
+                  placeholder={t('forms.descriptionPlaceholder')}
                   style={{ 
                     resize: 'vertical',
                     fontFamily: 'inherit',
@@ -817,12 +1187,156 @@ const DocumentsPage: React.FC = () => {
                   }}
                 />
                 <small style={{ color: '#9aa4b2', marginTop: '0.25rem' }}>
-                  {editDescription.length}/350 karakter
+                  {editDescription.length}/350 {t('forms.charCount')}
                 </small>
               </label>
+              
+              {/* Informasi Sertifikat & Properti Section */}
+              <div>
+                <label>
+                  <span>{t('forms.certificateType')} <span style={{ color: '#dc2626' }}>*</span></span>
+                  <select 
+                    value={editCertificateType} 
+                    onChange={(e) => setEditCertificateType(e.target.value)}
+                  >
+                    <option value="">{t('forms.selectCertificate')}</option>
+                    <option value="SHM">SHM</option>
+                    <option value="SHGB">SHGB</option>
+                    <option value="SHGU">SHGU</option>
+                    <option value="SHP">SHP</option>
+                    <option value="HPL">HPL</option>
+                    <option value="AJB">AJB</option>
+                    <option value="Girik">Girik</option>
+                    <option value="Others">Others</option>
+                  </select>
+                </label>
+                
+                <label>
+                  {t('forms.landSize')}
+                  <input 
+                    type="text" 
+                    value={editLandSize} 
+                    onChange={(e) => setEditLandSize(e.target.value)}
+                    placeholder={t('forms.landSizePlaceholder')}
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.areaName')}
+                  <input 
+                    type="text" 
+                    value={editAreaName} 
+                    onChange={(e) => setEditAreaName(e.target.value)}
+                    placeholder={t('forms.areaNamePlaceholder')}
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.projectName')}
+                  <input 
+                    type="text" 
+                    value={editProjectName} 
+                    onChange={(e) => setEditProjectName(e.target.value)}
+                    placeholder={t('forms.projectNamePlaceholder')}
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.zoneUrl')}
+                  <input 
+                    type="text" 
+                    value={editZoneUrl} 
+                    onChange={(e) => setEditZoneUrl(e.target.value)}
+                    placeholder="contoh: https://example.com"
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.zoneRtdr')}
+                  <input 
+                    type="text" 
+                    value={editZoneRtdr} 
+                    onChange={(e) => setEditZoneRtdr(e.target.value)}
+                    placeholder="contoh: Zone A"
+                  />
+                </label>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                  <label>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      {t('forms.publishDate')} <span style={{ color: '#dc2626' }}>*</span>
+                    </div>
+                    <input 
+                      type="date" 
+                      value={editPublishDate} 
+                      onChange={(e) => setEditPublishDate(e.target.value)}
+                      style={{ width: '100%', boxSizing: 'border-box' }}
+                    />
+                  </label>
+                  <label>
+                    <div style={{ marginBottom: '0.5rem' }}>
+                      {t('forms.expiredDate')}
+                    </div>
+                    <input 
+                      type="date" 
+                      value={editExpiredDate} 
+                      onChange={(e) => setEditExpiredDate(e.target.value)}
+                      style={{ width: '100%', boxSizing: 'border-box' }}
+                    />
+                  </label>
+                </div>
+                
+                <label>
+                  {t('forms.documentObtained')}
+                  <input 
+                    type="date" 
+                    value={editDocumentObtained} 
+                    onChange={(e) => setEditDocumentObtained(e.target.value)}
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.originDocument')}
+                  <textarea 
+                    value={editOriginDocument} 
+                    onChange={(e) => setEditOriginDocument(e.target.value)}
+                    placeholder="Keterangan dokumen asli..."
+                    style={{ 
+                      resize: 'vertical',
+                      fontFamily: 'inherit',
+                      fontSize: '0.95rem'
+                    }}
+                  />
+                </label>
+                
+                <label>
+                  {t('forms.previousOwner')}
+                  <input 
+                    type="text" 
+                    value={editPreviousOwner} 
+                    onChange={(e) => setEditPreviousOwner(e.target.value)}
+                    placeholder="Nama pemilik sebelumnya"
+                  />
+                </label>
+                
+                <label>
+                  <span>{t('forms.company')} <span style={{ color: '#dc2626' }}>*</span></span>
+                  <select 
+                    value={editCompany} 
+                    onChange={(e) => setEditCompany(e.target.value)}
+                  >
+                    <option value="">{t('forms.selectCompany')}</option>
+                    <option value="JH">JH</option>
+                    <option value="JHT">JHT</option>
+                    <option value="BEP">BEP</option>
+                    <option value="PIJ">PIJ</option>
+                  </select>
+                </label>
+              </div>
+              
               <div className="modal-actions">
-                <button type="button" onClick={closeDocEditModal} className="btn ghost">Cancel</button>
-                <button type="submit" className="btn primary">Update</button>
+                <button type="button" onClick={closeDocEditModal} className="btn ghost">{t('buttons.cancel')}</button>
+                <button type="submit" className="btn primary">{t('buttons.update')}</button>
               </div>
             </form>
           </div>
@@ -833,31 +1347,29 @@ const DocumentsPage: React.FC = () => {
       {deleteConfirm && (
         <div className="modal-overlay" onClick={closeDeleteConfirm}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>⚠️ Konfirmasi Hapus</h3>
+            <h3>{t('modals.deleteConfirmation')}</h3>
             <p className="muted">
               {deleteConfirm.type === 'master' && deleteConfirm.hasSubDocs ? (
                 <>
-                  <strong style={{ color: '#f97316' }}>Perhatian!</strong> Master dokumen <strong>"{deleteConfirm.title}"</strong> memiliki sub-dokumen di dalamnya.
-                  <br /><br />
-                  Menghapus master dokumen akan menghapus semua sub-dokumen terkait. Apakah Anda yakin?
+                  <strong style={{ color: '#f97316' }}>⚠️ {t('modals.warning')}</strong> {t('modals.deleteWithSubsMessage')}
                 </>
               ) : (
                 <>
-                  Apakah Anda yakin ingin menghapus {deleteConfirm.type === 'master' ? 'master dokumen' : 'sub-dokumen'} <strong>"{deleteConfirm.title}"</strong>?
+                  {t('modals.deleteMessage')}
                   <br /><br />
-                  Tindakan ini tidak dapat dibatalkan.
+                  {t('modals.cannotBeUndone')}
                 </>
               )}
             </p>
             <div className="modal-actions">
-              <button type="button" onClick={closeDeleteConfirm} className="btn ghost">Batal</button>
+              <button type="button" onClick={closeDeleteConfirm} className="btn ghost">{t('buttons.cancel')}</button>
               <button 
                 type="button" 
                 onClick={handleDeleteDocument} 
                 className="btn danger"
                 style={{ background: 'linear-gradient(90deg, rgba(220,38,38,0.8), rgba(185,28,28,0.8))' }}
               >
-                Ya, Hapus
+                {t('modals.confirmDelete')}
               </button>
             </div>
           </div>
@@ -874,9 +1386,9 @@ const DocumentsPage: React.FC = () => {
             </div>
             <div className="document-viewer">
               <div className="watermark-overlay">
-                <div className="watermark-text">CONFIDENTIAL</div>
-                <div className="watermark-text watermark-diagonal">DO NOT COPY</div>
-                <div className="watermark-text watermark-center">PREVIEW ONLY</div>
+                <div className="watermark-text">{t('modals.watermarkConfidential')}</div>
+                <div className="watermark-text watermark-diagonal">{t('modals.watermarkDoNotCopy')}</div>
+                <div className="watermark-text watermark-center">{t('modals.watermarkPreview')}</div>
               </div>
               <iframe 
                 src={`${viewDocument.fileUrl}#toolbar=0&navpanes=0&scrollbar=0`} 
@@ -893,7 +1405,7 @@ const DocumentsPage: React.FC = () => {
         <div className="modal-overlay" onClick={() => setMapModal(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '900px', width: '90%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3>🗺️ Lokasi: {mapModal.title}</h3>
+              <h3>🗺️ {t('modals.location')}: {mapModal.title}</h3>
               <button onClick={() => setMapModal(null)} className="btn ghost" style={{ fontSize: '1.5rem', padding: '0.25rem 0.5rem' }}>×</button>
             </div>
             <div style={{ 
