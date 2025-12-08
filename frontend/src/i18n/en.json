@@ -141,7 +141,19 @@
     "lastLogin": "Last login",
     "totalDocuments": "Total Documents",
     "masterDocuments": "Master Documents",
-    "subDocuments": "Sub-Documents"
+    "subDocuments": "Sub-Documents",
+    "activeSessions": "Active Sessions",
+    "quickActions": "Quick Actions",
+    "uploadNewDocument": "Upload New Document",
+    "reviewDocuments": "Review Documents",
+    "manageUsers": "Manage Users",
+    "recentActivity": "Recent Activity",
+    "noRecentActivity": "No recent activity",
+    "noActivityOnDate": "No activity on this date",
+    "justNow": "Just now",
+    "minutesAgo": "minutes ago",
+    "hoursAgo": "hours ago",
+    "yesterday": "Yesterday"
   },
   "users": {
     "management": "User Management",

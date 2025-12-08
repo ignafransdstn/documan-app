@@ -141,7 +141,19 @@
     "lastLogin": "Terakhir login",
     "totalDocuments": "Total Dokumen",
     "masterDocuments": "Dokumen Master",
-    "subDocuments": "Sub Dokumen"
+    "subDocuments": "Sub Dokumen",
+    "activeSessions": "Sesi Aktif",
+    "quickActions": "Aksi Cepat",
+    "uploadNewDocument": "Upload Dokumen Baru",
+    "reviewDocuments": "Review Dokumen",
+    "manageUsers": "Kelola Pengguna",
+    "recentActivity": "Aktivitas Terbaru",
+    "noRecentActivity": "Tidak ada aktivitas terbaru",
+    "noActivityOnDate": "Tidak ada aktivitas pada tanggal ini",
+    "justNow": "Baru saja",
+    "minutesAgo": "menit yang lalu",
+    "hoursAgo": "jam yang lalu",
+    "yesterday": "Kemarin"
   },
   "users": {
     "management": "Manajemen Pengguna",

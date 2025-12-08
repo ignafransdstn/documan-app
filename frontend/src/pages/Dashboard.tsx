@@ -125,7 +125,7 @@ const Dashboard: React.FC = () => {
               </svg>
             </div>
             <div className="dash-stat-content">
-              <div className="dash-stat-label">Sesi Aktif</div>
+              <div className="dash-stat-label">{t('dashboard.activeSessions')}</div>
               <div className="dash-stat-value">{activeSessions}</div>
             </div>
           </div>
@@ -139,7 +139,7 @@ const Dashboard: React.FC = () => {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            Aksi Cepat
+            {t('dashboard.quickActions')}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <Link to="/documents" className="quick-action-btn">
@@ -147,14 +147,14 @@ const Dashboard: React.FC = () => {
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M14 2v6h6M12 18v-6M9 15l3-3 3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Upload Dokumen Baru</span>
+              <span>{t('dashboard.uploadNewDocument')}</span>
             </Link>
             <Link to="/documents" className="quick-action-btn">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              <span>Review Dokumen</span>
+              <span>{t('dashboard.reviewDocuments')}</span>
             </Link>
             {user?.userLevel === 'admin' && (
               <Link to="/users" className="quick-action-btn">
@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
                   <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <span>Kelola Pengguna</span>
+                <span>{t('dashboard.manageUsers')}</span>
               </Link>
             )}
           </div>
@@ -175,7 +175,7 @@ const Dashboard: React.FC = () => {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Aktivitas Terbaru
+              {t('dashboard.recentActivity')}
             </h3>
             {/* Filter Tanggal */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -220,7 +220,7 @@ const Dashboard: React.FC = () => {
                 <div className="activity-dot" style={{ background: '#6b7280' }}></div>
                 <div>
                   <div className="activity-desc">
-                    {filterDate ? 'Tidak ada aktivitas pada tanggal ini' : 'Tidak ada aktivitas terbaru'}
+                    {filterDate ? t('dashboard.noActivityOnDate') : t('dashboard.noRecentActivity')}
                   </div>
                 </div>
               </div>
@@ -246,11 +246,11 @@ const Dashboard: React.FC = () => {
                 const diffDays = Math.floor(diffHours / 24)
                 
                 let timeText = ''
-                if (diffMins < 1) timeText = 'Baru saja'
-                else if (diffMins < 60) timeText = `${diffMins} menit yang lalu`
-                else if (diffHours < 24) timeText = `${diffHours} jam yang lalu`
-                else if (diffDays === 1) timeText = 'Kemarin'
-                else timeText = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+                if (diffMins < 1) timeText = t('dashboard.justNow')
+                else if (diffMins < 60) timeText = `${diffMins} ${t('dashboard.minutesAgo')}`
+                else if (diffHours < 24) timeText = `${diffHours} ${t('dashboard.hoursAgo')}`
+                else if (diffDays === 1) timeText = t('dashboard.yesterday')
+                else timeText = date.toLocaleDateString('en-US', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
                 
                 return (
                   <div key={log.id} className="activity-item">
