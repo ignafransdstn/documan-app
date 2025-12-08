@@ -58,6 +58,7 @@ const DocumentsPage: React.FC = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; type: 'master' | 'sub'; title: string; hasSubDocs?: boolean } | null>(null)
   const [viewDocument, setViewDocument] = useState<{ id: number; type: 'master' | 'sub'; title: string; fileUrl: string } | null>(null)
   const [mapModal, setMapModal] = useState<{ longitude: number; latitude: number; title: string } | null>(null)
+  const [detailModal, setDetailModal] = useState<ApiDocument | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
@@ -794,7 +795,27 @@ const DocumentsPage: React.FC = () => {
                     </button>
                   )}
                   <div className="doc-info">
-                    <div className="doc-id-badge">{d.documentNo}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <div className="doc-id-badge">{d.documentNo}</div>
+                      <button
+                        onClick={() => setDetailModal(d)}
+                        className="info-btn"
+                        title="Lihat detail informasi sertifikat"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: '0.25rem 0.5rem',
+                          fontSize: '1.2rem',
+                          color: '#7c3aed',
+                          transition: 'color 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#9333ea'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#7c3aed'}
+                      >
+                        ⓘ
+                      </button>
+                    </div>
                     <div className="doc-title">{d.title}</div>
                     <div className="doc-location">{d.location}</div>
                     {(d.longitude !== null && d.latitude !== null) && (
@@ -1454,8 +1475,117 @@ const DocumentsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Certificate Detail Modal */}
+      {detailModal && (
+        <div className="modal-overlay" onClick={() => setDetailModal(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '900px', width: '95%', maxHeight: '85vh', overflowY: 'auto' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(124,58,237,0.2)' }}>
+              <div>
+                <div style={{ fontSize: '0.9rem', color: '#7c7e8b', marginBottom: '0.5rem' }}>Kode Dokumen</div>
+                <h2 style={{ margin: '0 0 0.25rem 0', fontSize: '1.8rem', color: '#1d2e4a' }}>{detailModal.documentNo}</h2>
+                <p style={{ margin: '0', color: '#7c7e8b', fontSize: '0.95rem' }}>{detailModal.title}</p>
+              </div>
+              <button onClick={() => setDetailModal(null)} className="btn ghost" style={{ fontSize: '2rem', padding: '0', width: '2rem', height: '2rem' }}>×</button>
+            </div>
+
+            {/* Info Grid */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 2rem' }}>
+                {/* Basic Info */}
+                <div>
+                  <h4 style={{ margin: '0 0 1rem 0', color: '#1d2e4a', fontSize: '0.95rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Informasi Dasar</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    <div>
+                      <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Judul Dokumen</span>
+                      <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem' }}>{detailModal.title}</div>
+                    </div>
+                    <div>
+                      <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Lokasi</span>
+                      <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem' }}>{detailModal.location}</div>
+                    </div>
+                    {detailModal.description && (
+                      <div>
+                        <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Deskripsi</span>
+                        <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem', lineHeight: 1.5 }}>{detailModal.description}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Certificate Info */}
+                <div>
+                  <h4 style={{ margin: '0 0 1rem 0', color: '#1d2e4a', fontSize: '0.95rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Informasi Sertifikat</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {detailModal.certificateType && (
+                      <div>
+                        <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Tipe Sertifikat</span>
+                        <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem', fontWeight: 500, padding: '0.35rem 0.75rem', background: 'rgba(124,58,237,0.1)', borderRadius: '6px', width: 'fit-content' }}>{detailModal.certificateType}</div>
+                      </div>
+                    )}
+                    {detailModal.company && (
+                      <div>
+                        <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Perusahaan</span>
+                        <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem' }}>{detailModal.company}</div>
+                      </div>
+                    )}
+                    {detailModal.publishDate && (
+                      <div>
+                        <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Tanggal Diterbitkan</span>
+                        <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem' }}>{new Date(detailModal.publishDate).toLocaleDateString('id-ID')}</div>
+                      </div>
+                    )}
+                    {detailModal.expiredDate && (
+                      <div>
+                        <span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Tanggal Kadaluarsa</span>
+                        <div style={{ color: '#1d2e4a', marginTop: '0.25rem', fontSize: '0.95rem' }}>{new Date(detailModal.expiredDate).toLocaleDateString('id-ID')}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Information */}
+            {(detailModal.landSize || detailModal.areaName || detailModal.projectName || detailModal.zoneUrl || detailModal.zoneRtdr || detailModal.documentObtained || detailModal.originDocument || detailModal.previousOwner) && (
+              <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.2)' }}>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#1d2e4a', fontSize: '0.95rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Informasi Properti</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 2rem' }}>
+                  {detailModal.landSize && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Luas Tanah</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.landSize}</div></div>)}
+                  {detailModal.areaName && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Nama Area</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.areaName}</div></div>)}
+                  {detailModal.projectName && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Nama Proyek</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.projectName}</div></div>)}
+                  {detailModal.zoneUrl && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>URL Zone</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem', wordBreak: 'break-all' }}><a href={detailModal.zoneUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#7c3aed' }}>{detailModal.zoneUrl}</a></div></div>)}
+                  {detailModal.zoneRtdr && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Zone RTDR</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.zoneRtdr}</div></div>)}
+                  {detailModal.documentObtained && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Tanggal Dokumen</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{new Date(detailModal.documentObtained).toLocaleDateString('id-ID')}</div></div>)}
+                  {detailModal.originDocument && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Dokumen Asal</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.originDocument}</div></div>)}
+                  {detailModal.previousOwner && (<div><span style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Pemilik Sebelumnya</span><div style={{ color: '#1d2e4a', marginTop: '0.25rem' }}>{detailModal.previousOwner}</div></div>)}
+                </div>
+              </div>
+            )}
+
+            {/* Location */}
+            {(detailModal.longitude !== null && detailModal.latitude !== null) && (
+              <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.2)' }}>
+                <div style={{ background: 'rgba(124,58,237,0.05)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(124,58,237,0.2)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div><div style={{ color: '#7c7e8b', fontSize: '0.85rem', fontWeight: 500 }}>Koordinat</div><div style={{ color: '#1d2e4a', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem' }}>Lat: {Number(detailModal.latitude).toFixed(6)} | Long: {Number(detailModal.longitude).toFixed(6)}</div></div>
+                    <a href={`https://www.google.com/maps?q=${Number(detailModal.latitude)},${Number(detailModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ Google Maps</a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Footer */}
+            <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(124,58,237,0.2)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => setDetailModal(null)} className="btn secondary">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
 export default DocumentsPage
+
