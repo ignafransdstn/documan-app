@@ -125,7 +125,7 @@ const UsersPage: React.FC = () => {
 
       {/* Search and Filter Section */}
       <div className="card" style={{ marginTop: '1.5rem' }}>
-        <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>Daftar Pengguna ({filteredUsers.length})</h3>
+        <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>{t('users.list')} ({filteredUsers.length})</h3>
         <div className="user-filters">
         <div className="search-box">
           <svg className="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

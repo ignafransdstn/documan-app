@@ -198,6 +198,7 @@
     "yesterday": "Kemarin"
   },
   "users": {
+    "list": "Daftar Pengguna",
     "management": "Manajemen Pengguna",
     "subtitle": "Kelola pengguna dan hak akses sistem",
     "totalUsers": "Total Pengguna",

@@ -199,6 +199,7 @@
     "yesterday": "Yesterday"
   },
   "users": {
+    "list": "User List",
     "management": "User Management",
     "subtitle": "Manage users and system access rights",
     "totalUsers": "Total Users",
