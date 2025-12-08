@@ -1432,7 +1432,7 @@ const DocumentsPage: React.FC = () => {
                 {/* Basic Info */}
                 <div>
                   <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📋 Informasi Dasar</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                     <div>
                       <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Judul Dokumen</span>
                       <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.title}</div>
@@ -1442,7 +1442,7 @@ const DocumentsPage: React.FC = () => {
                       <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.location}</div>
                     </div>
                     {detailModal.description && (
-                      <div>
+                      <div style={{ gridColumn: '1 / -1' }}>
                         <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Deskripsi</span>
                         <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', lineHeight: 1.6 }}>{detailModal.description}</div>
                       </div>
@@ -1536,7 +1536,7 @@ const DocumentsPage: React.FC = () => {
             {/* Basic Info */}
             <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
               <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📋 Informasi Dasar</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                 {detailSubModal.title && (
                   <div>
                     <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Judul</span>
@@ -1549,13 +1549,13 @@ const DocumentsPage: React.FC = () => {
                     <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.location}</div>
                   </div>
                 )}
+                {detailSubModal.description && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Deskripsi</span>
+                    <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, lineHeight: '1.5' }}>{detailSubModal.description}</div>
+                  </div>
+                )}
               </div>
-              {detailSubModal.description && (
-                <div style={{ marginTop: '1rem' }}>
-                  <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Deskripsi</span>
-                  <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, lineHeight: '1.5' }}>{detailSubModal.description}</div>
-                </div>
-              )}
             </div>
 
             {/* Certificate Info */}
