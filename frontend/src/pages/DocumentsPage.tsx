@@ -1453,7 +1453,7 @@ const DocumentsPage: React.FC = () => {
                 {/* Certificate Info */}
                 <div>
                   <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📜 Informasi Sertifikat</h4>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                     {detailModal.certificateType && (
                       <div>
                         <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tipe Sertifikat</span>
@@ -1562,11 +1562,11 @@ const DocumentsPage: React.FC = () => {
             {(detailSubModal.certificateType || detailSubModal.landSize || detailSubModal.areaName || detailSubModal.projectName) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
                 <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📜 Informasi Sertifikat</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.certificateType && (
                     <div>
                       <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tipe Sertifikat</span>
-                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, display: 'inline-block', background: 'rgba(157,78,221,0.2)', padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid rgba(157,78,221,0.4)' }}>{detailSubModal.certificateType}</div>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 600, padding: '0.5rem 0.75rem', background: 'rgba(157,78,221,0.25)', borderRadius: '6px', width: 'fit-content', border: '1px solid rgba(157,78,221,0.4)' }}>{detailSubModal.certificateType}</div>
                     </div>
                   )}
                   {detailSubModal.landSize && (
@@ -1595,7 +1595,7 @@ const DocumentsPage: React.FC = () => {
             {(detailSubModal.zoneUrl || detailSubModal.zoneRtdr || detailSubModal.originDocument || detailSubModal.previousOwner) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
                 <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏘️ Informasi Properti</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.zoneUrl && (
                     <div>
                       <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Zone URL</span>
@@ -1628,7 +1628,7 @@ const DocumentsPage: React.FC = () => {
             {(detailSubModal.publishDate || detailSubModal.expiredDate || detailSubModal.documentObtained || detailSubModal.company) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
                 <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📄 Detail Dokumen</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.publishDate && (
                     <div>
                       <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tanggal Diterbitkan</span>
