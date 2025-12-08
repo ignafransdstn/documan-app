@@ -161,7 +161,14 @@
     "totalUsers": "Total Pengguna",
     "activeUsers": "Pengguna Aktif",
     "administrators": "Administrator",
-    "inactiveUsers": "Tidak Aktif"
+    "inactiveUsers": "Tidak Aktif",
+    "searchPlaceholder": "Cari pengguna berdasarkan nama, username, atau email...",
+    "allRoles": "Semua Role",
+    "active": "Aktif",
+    "inactive": "Tidak Aktif",
+    "createdDate": "Dibuat",
+    "lastLogin": "Login terakhir",
+    "sessionExpired": "Sesi Anda telah berakhir karena tidak ada aktivitas selama 1 jam. Silakan login kembali."
   },
   "pagination": {
     "page": "Halaman",

@@ -7,7 +7,7 @@ import extractErrorMessage from '../utils/extractErrorMessage'
 
 const UsersPage: React.FC = () => {
   const { token, user } = useAuth()
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [users, setUsers] = useState<ApiUser[]>([])
   const [loading, setLoading] = useState(false)
   const [approving, setApproving] = useState<number | null>(null)
@@ -135,7 +135,7 @@ const UsersPage: React.FC = () => {
           <input 
             type="text" 
             className="search-input"
-            placeholder="Cari pengguna berdasarkan nama, username, atau email..."
+            placeholder={t('users.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -145,19 +145,20 @@ const UsersPage: React.FC = () => {
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value as typeof roleFilter)}
         >
-          <option value="all">Semua Role</option>
-          <option value="admin">Admin / Super Admin</option>
-          <option value="level1">Level 1</option>
-          <option value="level2">Level 2</option>
-          <option value="level3">Level 3</option>
+          <option value="all">{t('users.allRoles')}</option>
+          <option value="admin">{t('auth.adminSuperAdmin')}</option>
+          <option value="level1">{t('auth.level1')}</option>
+          <option value="level2">{t('auth.level2')}</option>
+          <option value="level3">{t('auth.level3')}</option>
         </select>
       </div>
 
       {loading ? <p>Loading...</p> : (
         <div className="list">
           {filteredUsers.map(u => {
-            const created = (u as unknown as Record<string, string | undefined>).createdAt ? new Date((u as unknown as Record<string, string | undefined>).createdAt as string).toLocaleString('id-ID', {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) : ''
-            const last = (u as unknown as Record<string, string | undefined>).lastLogin ? new Date((u as unknown as Record<string, string | undefined>).lastLogin as string).toLocaleString('id-ID', {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) : ''
+            const locale = language === 'id' ? 'id-ID' : 'en-US'
+            const created = (u as unknown as Record<string, string | undefined>).createdAt ? new Date((u as unknown as Record<string, string | undefined>).createdAt as string).toLocaleString(locale, {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) : ''
+            const last = (u as unknown as Record<string, string | undefined>).lastLogin ? new Date((u as unknown as Record<string, string | undefined>).lastLogin as string).toLocaleString(locale, {day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit'}) : ''
             return (
             <div key={u.id} className="list-item user-row">
               <div className="user-left">
@@ -167,10 +168,10 @@ const UsersPage: React.FC = () => {
                     <strong className="user-name warm">{u.username}{u.isApproved === false && <span className="muted"> (pending)</span>}</strong>
                     <div className="badges">
                       <span className={`badge role ${u.userLevel}`}>{u.userLevel === 'admin' ? 'Administrator' : u.userLevel.replace(/level/, 'User Level ')}</span>
-                      <span className={`badge status ${u.isActive === false ? 'inactive' : 'active'}`}>{u.isActive === false ? 'Tidak Aktif' : 'Aktif'}</span>
+                      <span className={`badge status ${u.isActive === false ? 'inactive' : 'active'}`}>{u.isActive === false ? t('users.inactive') : t('users.active')}</span>
                     </div>
                   </div>
-                  <div className="muted user-meta">{u.email}{created ? ` • Dibuat: ${created}` : ''}{last ? ` • Login terakhir: ${last}` : ''}</div>
+                  <div className="muted user-meta">{u.email}{created ? ` • ${t('users.createdDate')}: ${created}` : ''}{last ? ` • ${t('users.lastLogin')}: ${last}` : ''}</div>
                 </div>
               </div>
               <div className="user-actions">

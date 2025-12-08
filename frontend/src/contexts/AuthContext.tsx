@@ -37,7 +37,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('lastActivity')
-        alert('Sesi Anda telah berakhir karena tidak ada aktivitas selama 1 jam. Silakan login kembali.')
+        // Note: Using hardcoded string since this is a context provider (no access to useLanguage hook)
+        // Users will see this in their default browser language
+        alert('Your session has expired due to inactivity for 1 hour. Please login again.')
       }, INACTIVITY_TIMEOUT)
     }
 

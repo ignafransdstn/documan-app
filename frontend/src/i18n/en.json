@@ -161,7 +161,14 @@
     "totalUsers": "Total Users",
     "activeUsers": "Active Users",
     "administrators": "Administrators",
-    "inactiveUsers": "Inactive Users"
+    "inactiveUsers": "Inactive Users",
+    "searchPlaceholder": "Search users by name, username, or email...",
+    "allRoles": "All Roles",
+    "active": "Active",
+    "inactive": "Inactive",
+    "createdDate": "Created",
+    "lastLogin": "Last login",
+    "sessionExpired": "Your session has expired due to inactivity for 1 hour. Please login again."
   },
   "pagination": {
     "page": "Page",
