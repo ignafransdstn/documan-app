@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import * as api from '../api'
-import type { ApiDocument } from '../api'
+import type { ApiDocument, ApiSubDocument } from '../api'
 import { useAuth } from '../hooks/useAuth'
 import { useLanguage } from '../hooks/useLanguage'
 import extractErrorMessage from '../utils/extractErrorMessage'
@@ -59,6 +59,7 @@ const DocumentsPage: React.FC = () => {
   const [viewDocument, setViewDocument] = useState<{ id: number; type: 'master' | 'sub'; title: string; fileUrl: string } | null>(null)
   const [mapModal, setMapModal] = useState<{ longitude: number; latitude: number; title: string } | null>(null)
   const [detailModal, setDetailModal] = useState<ApiDocument | null>(null)
+  const [detailSubModal, setDetailSubModal] = useState<ApiSubDocument | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
 
@@ -882,14 +883,34 @@ const DocumentsPage: React.FC = () => {
                   {d.subDocuments.map((sub) => (
                     <div key={sub.id} className="subdoc-item">
                       <div className="subdoc-info">
-                        <button 
-                          onClick={() => openEditModal(sub.id, sub.subDocumentNo)}
-                          className="subdoc-number"
-                          title="Click to edit number"
-                          style={{ cursor: 'pointer', border: '1px solid rgba(124,58,237,0.3)' }}
-                        >
-                          {sub.subDocumentNo}
-                        </button>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                          <button 
+                            onClick={() => openEditModal(sub.id, sub.subDocumentNo)}
+                            className="subdoc-number"
+                            title="Click to edit number"
+                            style={{ cursor: 'pointer', border: '1px solid rgba(124,58,237,0.3)' }}
+                          >
+                            {sub.subDocumentNo}
+                          </button>
+                          <button
+                            onClick={() => setDetailSubModal(sub)}
+                            className="info-btn"
+                            title="Lihat detail informasi sub-dokumen"
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              padding: '0.25rem 0.5rem',
+                              fontSize: '1rem',
+                              color: '#7c3aed',
+                              transition: 'color 0.2s'
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.color = '#9333ea'}
+                            onMouseLeave={(e) => e.currentTarget.style.color = '#7c3aed'}
+                          >
+                            ⓘ
+                          </button>
+                        </div>
                         <div className="subdoc-title">{sub.title}</div>
                         <div className="subdoc-location">{sub.location}</div>
                         {(sub.longitude !== null && sub.latitude !== null) && (
@@ -1494,6 +1515,163 @@ const DocumentsPage: React.FC = () => {
             {/* Footer */}
             <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(124,58,237,0.3)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
               <button onClick={() => setDetailModal(null)} className="btn secondary">Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sub-Document Detail Modal */}
+      {detailSubModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
+          <div style={{ backgroundColor: '#0f1419', borderRadius: '12px', padding: '2rem', maxWidth: '700px', width: '90%', maxHeight: '80vh', overflowY: 'auto', border: '1px solid rgba(124,58,237,0.3)', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
+              <div>
+                <div style={{ fontSize: '0.85rem', color: '#a0a4b0', fontWeight: 600, marginBottom: '0.5rem' }}>Sub-dokumen</div>
+                <div style={{ fontSize: '1.5rem', color: '#ffffff', fontWeight: 700 }}>{detailSubModal.subDocumentNo}</div>
+              </div>
+              <button onClick={() => setDetailSubModal(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0a4b0' }}>✕</button>
+            </div>
+
+            {/* Basic Info */}
+            <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
+              <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📋 Informasi Dasar</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                {detailSubModal.title && (
+                  <div>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Judul</span>
+                    <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.title}</div>
+                  </div>
+                )}
+                {detailSubModal.location && (
+                  <div>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Lokasi</span>
+                    <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.location}</div>
+                  </div>
+                )}
+              </div>
+              {detailSubModal.description && (
+                <div style={{ marginTop: '1rem' }}>
+                  <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Deskripsi</span>
+                  <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, lineHeight: '1.5' }}>{detailSubModal.description}</div>
+                </div>
+              )}
+            </div>
+
+            {/* Certificate Info */}
+            {(detailSubModal.certificateType || detailSubModal.landSize || detailSubModal.areaName || detailSubModal.projectName) && (
+              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📜 Informasi Sertifikat</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {detailSubModal.certificateType && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tipe Sertifikat</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, display: 'inline-block', background: 'rgba(157,78,221,0.2)', padding: '0.4rem 0.8rem', borderRadius: '4px', border: '1px solid rgba(157,78,221,0.4)' }}>{detailSubModal.certificateType}</div>
+                    </div>
+                  )}
+                  {detailSubModal.landSize && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Ukuran Lahan</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.landSize}</div>
+                    </div>
+                  )}
+                  {detailSubModal.areaName && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Nama Area</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.areaName}</div>
+                    </div>
+                  )}
+                  {detailSubModal.projectName && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Nama Proyek</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.projectName}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Property Info */}
+            {(detailSubModal.zoneUrl || detailSubModal.zoneRtdr || detailSubModal.originDocument || detailSubModal.previousOwner) && (
+              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏘️ Informasi Properti</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {detailSubModal.zoneUrl && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Zone URL</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500, wordBreak: 'break-all' }}>{detailSubModal.zoneUrl}</div>
+                    </div>
+                  )}
+                  {detailSubModal.zoneRtdr && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Zone RTDR</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.zoneRtdr}</div>
+                    </div>
+                  )}
+                  {detailSubModal.originDocument && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Dokumen Asal</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.originDocument}</div>
+                    </div>
+                  )}
+                  {detailSubModal.previousOwner && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Pemilik Sebelumnya</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.previousOwner}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Document Details */}
+            {(detailSubModal.publishDate || detailSubModal.expiredDate || detailSubModal.documentObtained || detailSubModal.company) && (
+              <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📄 Detail Dokumen</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                  {detailSubModal.publishDate && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tanggal Diterbitkan</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailSubModal.publishDate).toLocaleDateString('id-ID')}</div>
+                    </div>
+                  )}
+                  {detailSubModal.expiredDate && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Tanggal Kadaluarsa</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailSubModal.expiredDate).toLocaleDateString('id-ID')}</div>
+                    </div>
+                  )}
+                  {detailSubModal.documentObtained && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Dokumen Diperoleh</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.documentObtained}</div>
+                    </div>
+                  )}
+                  {detailSubModal.company && (
+                    <div>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Perusahaan</span>
+                      <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.company}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Location */}
+            {(detailSubModal.longitude !== null && detailSubModal.latitude !== null) && (
+              <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.3)' }}>
+                <div style={{ background: 'rgba(157,78,221,0.15)', padding: '1.25rem', borderRadius: '8px', border: '1px solid rgba(157,78,221,0.3)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div><div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>📍 Koordinat</div><div style={{ color: '#e8ecf1', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem', fontWeight: 500 }}>Lat: {Number(detailSubModal.latitude).toFixed(6)}<br />Long: {Number(detailSubModal.longitude).toFixed(6)}</div></div>
+                    <a href={`https://www.google.com/maps?q=${Number(detailSubModal.latitude)},${Number(detailSubModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ Google Maps</a>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Footer */}
+            <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(124,58,237,0.3)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+              <button onClick={() => setDetailSubModal(null)} className="btn secondary">Tutup</button>
             </div>
           </div>
         </div>
