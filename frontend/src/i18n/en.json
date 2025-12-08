@@ -108,6 +108,8 @@
   "documents": {
     "list": "Documents List",
     "documentList": "Document List",
+    "pageTitle": "Document Management",
+    "pageSubtitle": "Manage documents and sub-documents in the system",
     "noDocuments": "No documents found",
     "noDocumentsYet": "No documents yet",
     "noMatchingDocuments": "No matching documents found",

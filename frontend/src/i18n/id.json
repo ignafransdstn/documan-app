@@ -107,6 +107,8 @@
   "documents": {
     "list": "Daftar Dokumen",
     "documentList": "Daftar Dokumen",
+    "pageTitle": "Manajemen Dokumen",
+    "pageSubtitle": "Kelola dokumen dan sub-dokumen dalam sistem",
     "noDocuments": "Tidak ada dokumen",
     "noDocumentsYet": "Belum ada dokumen",
     "noMatchingDocuments": "Tidak ada dokumen yang sesuai dengan pencarian",

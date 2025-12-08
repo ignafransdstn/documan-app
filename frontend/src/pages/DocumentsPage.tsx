@@ -498,15 +498,15 @@ const DocumentsPage: React.FC = () => {
     <div className="documents-page-container">
       <div className="documents-header">
         <div>
-          <h1 className="documents-main-title">Manajemen Dokumen</h1>
-          <p className="documents-subtitle">Kelola dokumen dan sub-dokumen dalam sistem</p>
+          <h1 className="documents-main-title">{t('documents.pageTitle')}</h1>
+          <p className="documents-subtitle">{t('documents.pageSubtitle')}</p>
         </div>
         <button 
           className="btn primary" 
           onClick={() => setShowUploadForm(!showUploadForm)}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
-          <span style={{ fontSize: '1.2rem' }}>+</span> Tambah Dokumen
+          <span style={{ fontSize: '1.2rem' }}>+</span> {t('buttons.addDocument')}
         </button>
       </div>
 
