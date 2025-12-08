@@ -1419,7 +1419,7 @@ const DocumentsPage: React.FC = () => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
               <div>
-                <div style={{ fontSize: '0.9rem', color: '#a0a4b0', marginBottom: '0.5rem', fontWeight: 500 }}>Kode Dokumen</div>
+                <div style={{ fontSize: '0.9rem', color: '#a0a4b0', marginBottom: '0.5rem', fontWeight: 500 }}>{t('documents.documentCode')}</div>
                 <h2 style={{ margin: '0 0 0.25rem 0', fontSize: '1.8rem', color: '#ffffff', fontWeight: 700 }}>{detailModal.documentNo}</h2>
                 <p style={{ margin: '0', color: '#c0c4cc', fontSize: '0.95rem' }}>{detailModal.title}</p>
               </div>
@@ -1431,19 +1431,19 @@ const DocumentsPage: React.FC = () => {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem 2rem' }}>
                 {/* Basic Info */}
                 <div>
-                  <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📋 Informasi Dasar</h4>
+                  <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📋 {t('documents.basicInfo')}</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Judul Dokumen</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.documentTitle')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.title}</div>
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Lokasi</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.locationLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.location}</div>
                     </div>
                     {detailModal.description && (
                       <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Deskripsi</span>
+                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.descriptionLabel')}</span>
                         <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', lineHeight: 1.6 }}>{detailModal.description}</div>
                       </div>
                     )}
@@ -1452,29 +1452,29 @@ const DocumentsPage: React.FC = () => {
 
                 {/* Certificate Info */}
                 <div>
-                  <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📜 Informasi Sertifikat</h4>
+                  <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>📜 {t('documents.certificateInfo')}</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                     {detailModal.certificateType && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tipe Sertifikat</span>
+                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('forms.certificateType')}</span>
                         <div style={{ color: '#e8ecf1', margin: 0, padding: '0.5rem 0.75rem', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(157,78,221,0.25)', borderRadius: '6px', display: 'inline-block', border: '1px solid rgba(157,78,221,0.4)' }}>{detailModal.certificateType}</div>
                       </div>
                     )}
                     {detailModal.company && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Perusahaan</span>
+                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('forms.company')}</span>
                         <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.company}</div>
                       </div>
                     )}
                     {detailModal.publishDate && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tanggal Diterbitkan</span>
+                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.publishDateLabel')}</span>
                         <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailModal.publishDate).toLocaleDateString('id-ID')}</div>
                       </div>
                     )}
                     {detailModal.expiredDate && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tanggal Kadaluarsa</span>
+                        <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.expiredDateLabel')}</span>
                         <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailModal.expiredDate).toLocaleDateString('id-ID')}</div>
                       </div>
                     )}
@@ -1486,16 +1486,16 @@ const DocumentsPage: React.FC = () => {
             {/* Property Information */}
             {(detailModal.landSize || detailModal.areaName || detailModal.projectName || detailModal.zoneUrl || detailModal.zoneRtdr || detailModal.documentObtained || detailModal.originDocument || detailModal.previousOwner) && (
               <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.3)' }}>
-                <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏘️ Informasi Properti</h4>
+                <h4 style={{ margin: '0 0 1rem 0', color: '#9d4edd', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>🏘️ {t('documents.propertyInfo')}</h4>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
-                  {detailModal.landSize && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Luas Tanah</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.landSize}</div></div>)}
-                  {detailModal.areaName && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Nama Area</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.areaName}</div></div>)}
-                  {detailModal.projectName && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Nama Proyek</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.projectName}</div></div>)}
-                  {detailModal.zoneUrl && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>URL Zone</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500, wordBreak: 'break-all' }}><a href={detailModal.zoneUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#9d4edd', textDecoration: 'underline' }}>{detailModal.zoneUrl}</a></div></div>)}
-                  {detailModal.zoneRtdr && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Zone RTDR</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.zoneRtdr}</div></div>)}
-                  {detailModal.documentObtained && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tanggal Dokumen</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailModal.documentObtained).toLocaleDateString('id-ID')}</div></div>)}
-                  {detailModal.originDocument && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Dokumen Asal</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.originDocument}</div></div>)}
-                  {detailModal.previousOwner && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Pemilik Sebelumnya</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.previousOwner}</div></div>)}
+                  {detailModal.landSize && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.landSizeLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.landSize}</div></div>)}
+                  {detailModal.areaName && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.areaNameLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.areaName}</div></div>)}
+                  {detailModal.projectName && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.projectNameLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.projectName}</div></div>)}
+                  {detailModal.zoneUrl && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.zoneUrlLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500, wordBreak: 'break-all' }}><a href={detailModal.zoneUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#9d4edd', textDecoration: 'underline' }}>{detailModal.zoneUrl}</a></div></div>)}
+                  {detailModal.zoneRtdr && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.zoneRtdrLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.zoneRtdr}</div></div>)}
+                  {detailModal.documentObtained && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.documentObtainedLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailModal.documentObtained).toLocaleDateString('id-ID')}</div></div>)}
+                  {detailModal.originDocument && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.originDocumentLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.originDocument}</div></div>)}
+                  {detailModal.previousOwner && (<div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}><span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.previousOwnerLabel')}</span><div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.previousOwner}</div></div>)}
                 </div>
               </div>
             )}
@@ -1505,8 +1505,8 @@ const DocumentsPage: React.FC = () => {
               <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.3)' }}>
                 <div style={{ background: 'rgba(157,78,221,0.15)', padding: '1.25rem', borderRadius: '8px', border: '1px solid rgba(157,78,221,0.3)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>📍 Koordinat</div><div style={{ color: '#e8ecf1', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem', fontWeight: 500 }}>Lat: {Number(detailModal.latitude).toFixed(6)}<br />Long: {Number(detailModal.longitude).toFixed(6)}</div></div>
-                    <a href={`https://www.google.com/maps?q=${Number(detailModal.latitude)},${Number(detailModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ Google Maps</a>
+                    <div><div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>📍 {t('documents.coordinates')}</div><div style={{ color: '#e8ecf1', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem', fontWeight: 500 }}>Lat: {Number(detailModal.latitude).toFixed(6)}<br />Long: {Number(detailModal.longitude).toFixed(6)}</div></div>
+                    <a href={`https://www.google.com/maps?q=${Number(detailModal.latitude)},${Number(detailModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ {t('documents.googleMaps')}</a>
                   </div>
                 </div>
               </div>
@@ -1514,7 +1514,7 @@ const DocumentsPage: React.FC = () => {
 
             {/* Footer */}
             <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(124,58,237,0.3)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setDetailModal(null)} className="btn secondary">Tutup</button>
+              <button onClick={() => setDetailModal(null)} className="btn secondary">{t('documents.close')}</button>
             </div>
           </div>
         </div>
@@ -1527,7 +1527,7 @@ const DocumentsPage: React.FC = () => {
             {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
               <div>
-                <div style={{ fontSize: '0.85rem', color: '#a0a4b0', fontWeight: 600, marginBottom: '0.5rem' }}>Sub-dokumen</div>
+                <div style={{ fontSize: '0.85rem', color: '#a0a4b0', fontWeight: 600, marginBottom: '0.5rem' }}>{t('documents.subdocumentLabel')}</div>
                 <div style={{ fontSize: '1.5rem', color: '#ffffff', fontWeight: 700 }}>{detailSubModal.subDocumentNo}</div>
               </div>
               <button onClick={() => setDetailSubModal(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0a4b0' }}>✕</button>
@@ -1535,23 +1535,23 @@ const DocumentsPage: React.FC = () => {
 
             {/* Basic Info */}
             <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
-              <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📋 Informasi Dasar</div>
+              <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📋 {t('documents.basicInfo')}</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                 {detailSubModal.title && (
                   <div>
-                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>Judul</span>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', marginBottom: '0.4rem' }}>{t('documents.documentTitle')}</span>
                     <div style={{ color: '#e8ecf1', marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.title}</div>
                   </div>
                 )}
                 {detailSubModal.location && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Lokasi</span>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.locationLabel')}</span>
                     <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.location}</div>
                   </div>
                 )}
                 {detailSubModal.description && (
                   <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Deskripsi</span>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.descriptionLabel')}</span>
                     <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500, lineHeight: '1.5' }}>{detailSubModal.description}</div>
                   </div>
                 )}
@@ -1561,29 +1561,29 @@ const DocumentsPage: React.FC = () => {
             {/* Certificate Info */}
             {(detailSubModal.certificateType || detailSubModal.landSize || detailSubModal.areaName || detailSubModal.projectName) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
-                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📜 Informasi Sertifikat</div>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📜 {t('documents.certificateInfo')}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.certificateType && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tipe Sertifikat</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('forms.certificateType')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, padding: '0.5rem 0.75rem', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(157,78,221,0.25)', borderRadius: '6px', display: 'inline-block', border: '1px solid rgba(157,78,221,0.4)' }}>{detailSubModal.certificateType}</div>
                     </div>
                   )}
                   {detailSubModal.landSize && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Ukuran Lahan</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.landSizeLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.landSize}</div>
                     </div>
                   )}
                   {detailSubModal.areaName && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Nama Area</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.areaNameLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.areaName}</div>
                     </div>
                   )}
                   {detailSubModal.projectName && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Nama Proyek</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.projectNameLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.projectName}</div>
                     </div>
                   )}
@@ -1594,29 +1594,29 @@ const DocumentsPage: React.FC = () => {
             {/* Property Info */}
             {(detailSubModal.zoneUrl || detailSubModal.zoneRtdr || detailSubModal.originDocument || detailSubModal.previousOwner) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
-                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏘️ Informasi Properti</div>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>🏘️ {t('documents.propertyInfo')}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.zoneUrl && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Zone URL</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.zoneUrlLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500, wordBreak: 'break-all' }}>{detailSubModal.zoneUrl}</div>
                     </div>
                   )}
                   {detailSubModal.zoneRtdr && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Zone RTDR</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.zoneRtdrLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.zoneRtdr}</div>
                     </div>
                   )}
                   {detailSubModal.originDocument && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Dokumen Asal</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.originDocumentLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.originDocument}</div>
                     </div>
                   )}
                   {detailSubModal.previousOwner && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Pemilik Sebelumnya</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.previousOwnerLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.previousOwner}</div>
                     </div>
                   )}
@@ -1627,29 +1627,29 @@ const DocumentsPage: React.FC = () => {
             {/* Document Details */}
             {(detailSubModal.publishDate || detailSubModal.expiredDate || detailSubModal.documentObtained || detailSubModal.company) && (
               <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid rgba(124,58,237,0.3)' }}>
-                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📄 Detail Dokumen</div>
+                <div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📄 {t('documents.documentDetails')}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', alignItems: 'start' }}>
                   {detailSubModal.publishDate && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tanggal Diterbitkan</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.publishDateLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailSubModal.publishDate).toLocaleDateString('id-ID')}</div>
                     </div>
                   )}
                   {detailSubModal.expiredDate && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Tanggal Kadaluarsa</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.expiredDateLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{new Date(detailSubModal.expiredDate).toLocaleDateString('id-ID')}</div>
                     </div>
                   )}
                   {detailSubModal.documentObtained && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Dokumen Diperoleh</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.documentObtainedLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.documentObtained}</div>
                     </div>
                   )}
                   {detailSubModal.company && (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
-                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>Perusahaan</span>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('forms.company')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.company}</div>
                     </div>
                   )}
@@ -1662,8 +1662,8 @@ const DocumentsPage: React.FC = () => {
               <div style={{ marginBottom: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(124,58,237,0.3)' }}>
                 <div style={{ background: 'rgba(157,78,221,0.15)', padding: '1.25rem', borderRadius: '8px', border: '1px solid rgba(157,78,221,0.3)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div><div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>📍 Koordinat</div><div style={{ color: '#e8ecf1', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem', fontWeight: 500 }}>Lat: {Number(detailSubModal.latitude).toFixed(6)}<br />Long: {Number(detailSubModal.longitude).toFixed(6)}</div></div>
-                    <a href={`https://www.google.com/maps?q=${Number(detailSubModal.latitude)},${Number(detailSubModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ Google Maps</a>
+                    <div><div style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>📍 {t('documents.coordinates')}</div><div style={{ color: '#e8ecf1', fontSize: '0.95rem', fontFamily: 'monospace', marginTop: '0.25rem', fontWeight: 500 }}>Lat: {Number(detailSubModal.latitude).toFixed(6)}<br />Long: {Number(detailSubModal.longitude).toFixed(6)}</div></div>
+                    <a href={`https://www.google.com/maps?q=${Number(detailSubModal.latitude)},${Number(detailSubModal.longitude)}`} target="_blank" rel="noopener noreferrer" className="btn primary" style={{ whiteSpace: 'nowrap', fontSize: '0.9rem' }}>🗺️ {t('documents.googleMaps')}</a>
                   </div>
                 </div>
               </div>
@@ -1671,7 +1671,7 @@ const DocumentsPage: React.FC = () => {
 
             {/* Footer */}
             <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(124,58,237,0.3)', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
-              <button onClick={() => setDetailSubModal(null)} className="btn secondary">Tutup</button>
+              <button onClick={() => setDetailSubModal(null)} className="btn secondary">{t('documents.close')}</button>
             </div>
           </div>
         </div>
