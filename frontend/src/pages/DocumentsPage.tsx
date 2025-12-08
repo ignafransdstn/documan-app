@@ -772,7 +772,7 @@ const DocumentsPage: React.FC = () => {
         <h3 style={{ marginBottom: '1rem' }}>{t('documents.documentList')} ({filteredDocs.length})</h3>
 
       {loading ? (
-        <p>Loading...</p>
+        <p>{t('buttons.loading')}</p>
       ) : paginatedDocs.length === 0 ? (
         <p className="muted" style={{ textAlign: 'center', padding: '2rem' }}>
           {searchQuery ? t('documents.noMatchingDocuments') : t('documents.noDocumentsYet')}

@@ -153,7 +153,7 @@ const UsersPage: React.FC = () => {
         </select>
       </div>
 
-      {loading ? <p>Loading...</p> : (
+      {loading ? <p>{t('buttons.loading')}</p> : (
         <div className="list">
           {filteredUsers.map(u => {
             const locale = language === 'id' ? 'id-ID' : 'en-US'

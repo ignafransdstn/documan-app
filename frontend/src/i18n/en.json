@@ -78,6 +78,7 @@
     "download": "Download",
     "search": "Search",
     "previous": "Previous",
+    "loading": "Loading...",
     "next": "Next"
   },
   "modals": {
