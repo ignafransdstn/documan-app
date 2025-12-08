@@ -520,7 +520,7 @@ const DocumentsPage: React.FC = () => {
           <input 
             type="text" 
             className="search-input" 
-            placeholder="Cari dokumen berdasarkan judul"
+            placeholder={t('documents.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -530,22 +530,22 @@ const DocumentsPage: React.FC = () => {
           value={masterFilter}
           onChange={(e) => setMasterFilter(e.target.value as typeof masterFilter)}
         >
-          <option value="all">Semua Dokumen</option>
-          <option value="master-only">Master Saja</option>
-          <option value="master-with-subs">Master dengan Sub Dokumen</option>
+          <option value="all">{t('documents.allDocuments')}</option>
+          <option value="master-only">{t('documents.masterOnly')}</option>
+          <option value="master-with-subs">{t('documents.masterWithSubs')}</option>
         </select>
       </div>
 
       {/* Upload Form - Collapsible */}
       {showUploadForm && (
         <div className="card" style={{ marginTop: '1.5rem' }}>
-          <h3 style={{ marginBottom: '1rem' }}>Upload Dokumen Baru</h3>
+          <h3 style={{ marginBottom: '1rem' }}>{t('documents.uploadNewDocument')}</h3>
           <form className="form" onSubmit={handleUpload}>
             <label>
-              Document Type
+              {t('documents.documentType')}
               <select value={documentType} onChange={(e) => setDocumentType(e.target.value as 'master' | 'sub')}>
-                <option value="master">{t('documents.list')}</option>
-                <option value="sub">Sub-Document</option>
+                <option value="master">{t('documents.masterDocument')}</option>
+                <option value="sub">{t('documents.subDocument')}</option>
               </select>
             </label>
 
@@ -582,23 +582,23 @@ const DocumentsPage: React.FC = () => {
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <label>
-                Longitude (Opsional)
+                {t('forms.longitudeOptional')}
                 <input 
                   type="number" 
                   step="any" 
                   value={longitude} 
                   onChange={(e) => setLongitude(e.target.value)} 
-                  placeholder="contoh: -197.491239"
+                  placeholder={t('forms.longitudeExample')}
                 />
               </label>
               <label>
-                Latitude (Opsional)
+                {t('forms.latitudeOptional')}
                 <input 
                   type="number" 
                   step="any" 
                   value={latitude} 
                   onChange={(e) => setLatitude(e.target.value)} 
-                  placeholder="contoh: 104.37124"
+                  placeholder={t('forms.latitudeExample')}
                 />
               </label>
             </div>
@@ -622,7 +622,7 @@ const DocumentsPage: React.FC = () => {
                 }}
               />
               <span style={{ fontSize: '0.85rem', color: '#9aa4b2', marginTop: '0.25rem' }}>
-                {description.length}/350 karakter
+                {description.length}/350 {t('forms.charCountSuffix')}
               </span>
             </label>
 
@@ -801,7 +801,7 @@ const DocumentsPage: React.FC = () => {
                       <button
                         onClick={() => setDetailModal(d)}
                         className="info-btn"
-                        title="Lihat detail informasi sertifikat"
+                        title={t('documents.viewCertificateDetails')}
                         style={{
                           background: 'none',
                           border: 'none',
@@ -837,9 +837,9 @@ const DocumentsPage: React.FC = () => {
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.color = '#9333ea'}
                         onMouseLeave={(e) => e.currentTarget.style.color = '#7c3aed'}
-                        title="Klik untuk melihat peta"
+                        title={t('documents.clickToViewMap')}
                       >
-                        📍 Lokasi pada peta : {d.longitude}, {d.latitude}
+                        📍 {t('documents.locationOnMap')} : {d.longitude}, {d.latitude}
                       </div>
                     )}
                     {d.description && <div className="doc-description">{d.description}</div>}
@@ -847,7 +847,7 @@ const DocumentsPage: React.FC = () => {
                     {d.subDocuments && d.subDocuments.length > 0 && (
                       <div className="doc-count">
                         <span className="doc-count-number">{d.subDocuments.length}</span>
-                        <span>sub-document{d.subDocuments.length > 1 ? 's' : ''}</span>
+                        <span>{t('documents.subDocumentsCount')}{d.subDocuments.length > 1 ? 's' : ''}</span>
                       </div>
                     )}
                   </div>
@@ -856,14 +856,14 @@ const DocumentsPage: React.FC = () => {
                   <button 
                     onClick={() => openDocEditModal(d.id, d.title, d.location, d.description || '', 'master', d.longitude, d.latitude, d.certificateType, d.landSize, d.areaName, d.projectName, d.zoneUrl, d.zoneRtdr, d.publishDate, d.expiredDate, d.documentObtained, d.originDocument, d.previousOwner, d.company)}
                     className="btn ghost"
-                    title="Edit document"
+                    title={t('documents.editDocument')}
                   >
                     ✏️ {t('buttons.edit')}
                   </button>
                   <button 
                     onClick={() => handleViewDocument(d.id, 'master', d.title)}
                     className="btn ghost"
-                    title="View document"
+                    title={t('buttons.view')}
                   >
                     👁️ {t('buttons.view')}
                   </button>
@@ -871,7 +871,7 @@ const DocumentsPage: React.FC = () => {
                   <button 
                     onClick={() => openDeleteConfirm(d.id, 'master', d.title, (d.subDocuments?.length || 0) > 0)}
                     className="btn small danger"
-                    title="Delete document"
+                    title={t('buttons.delete')}
                   >
                     🗑️ {t('buttons.delete')}
                   </button>
@@ -887,7 +887,7 @@ const DocumentsPage: React.FC = () => {
                           <button 
                             onClick={() => openEditModal(sub.id, sub.subDocumentNo)}
                             className="subdoc-number"
-                            title="Click to edit number"
+                            title={t('documents.editSubDocumentNo')}
                             style={{ cursor: 'pointer', border: '1px solid rgba(124,58,237,0.3)' }}
                           >
                             {sub.subDocumentNo}
@@ -895,7 +895,7 @@ const DocumentsPage: React.FC = () => {
                           <button
                             onClick={() => setDetailSubModal(sub)}
                             className="info-btn"
-                            title="Lihat detail informasi sub-dokumen"
+                            title={t('documents.viewCertificateDetails')}
                             style={{
                               background: 'none',
                               border: 'none',
