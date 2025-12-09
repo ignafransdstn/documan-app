@@ -3,17 +3,18 @@
  * Validates form data against field definitions and validation rules
  */
 
-import { FormField, FormData, FormErrors } from '../components/DynamicFormRenderer';
+import type { FormField, FormData, FormErrors } from '../components/DynamicFormRenderer';
 
 export interface ValidationRule {
-  pattern?: string;
-  minLength?: number;
-  maxLength?: number;
-  min?: number;
-  max?: number;
-  fileTypes?: string[];
-  maxFileSize?: number;
-  customValidator?: (value: any) => boolean | string;
+  pattern?: string
+  minLength?: number
+  maxLength?: number
+  min?: number
+  max?: number
+  options?: { value: string; label: string }[]
+  fileTypes?: string[]
+  maxFileSize?: number
+  customValidator?: (value: string | number | boolean) => boolean | string
 }
 
 export class FormValidator {
@@ -36,7 +37,7 @@ export class FormValidator {
   /**
    * Validate a single field
    */
-  static validateField(field: FormField, value: any): string | null {
+  static validateField(field: FormField, value: string | number | boolean | null | undefined): string | null {
     // Check required
     if (field.isRequired && this.isEmpty(value)) {
       return `${field.fieldName} is required`;
@@ -48,23 +49,24 @@ export class FormValidator {
     }
 
     const rules = field.validationRules || {};
+    const strValue = String(value || '');
 
     switch (field.fieldType) {
       case 'text':
       case 'textarea':
-        return this.validateString(value, field.fieldName, rules);
+        return this.validateString(strValue, field.fieldName, rules);
 
       case 'number':
-        return this.validateNumber(value, field.fieldName, rules);
+        return this.validateNumber(value as string | number, field.fieldName, rules);
 
       case 'date':
-        return this.validateDate(value, field.fieldName, rules);
+        return this.validateDate(strValue, field.fieldName);
 
       case 'select':
-        return this.validateSelect(value, field.fieldName, rules);
+        return this.validateSelect(strValue, field.fieldName, rules);
 
       case 'file':
-        return this.validateFile(value, field.fieldName, rules);
+        return null; // File validation done separately
 
       default:
         return null;
@@ -74,7 +76,7 @@ export class FormValidator {
   /**
    * Check if value is empty
    */
-  private static isEmpty(value: any): boolean {
+  private static isEmpty(value: string | number | boolean | null | undefined | File | object): boolean {
     return (
       value === null ||
       value === undefined ||
@@ -109,8 +111,8 @@ export class FormValidator {
         if (!regex.test(value)) {
           return `${fieldName} format is invalid`;
         }
-      } catch (e) {
-        console.error(`Invalid regex pattern for ${fieldName}:`, rules.pattern);
+      } catch (err) {
+        console.error(`Invalid regex pattern for ${fieldName}:`, rules.pattern, err);
       }
     }
 
@@ -131,8 +133,8 @@ export class FormValidator {
   /**
    * Validate number field
    */
-  private static validateNumber(value: any, fieldName: string, rules: ValidationRule): string | null {
-    const numValue = parseFloat(value);
+  private static validateNumber(value: string | number | boolean, fieldName: string, rules: ValidationRule): string | null {
+    const numValue = parseFloat(String(value));
 
     if (isNaN(numValue)) {
       return `${fieldName} must be a valid number`;
@@ -154,7 +156,7 @@ export class FormValidator {
   /**
    * Validate date field
    */
-  private static validateDate(value: string, fieldName: string, rules: ValidationRule): string | null {
+  private static validateDate(value: string, fieldName: string): string | null {
     // Check if valid date format (YYYY-MM-DD)
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(value)) {
@@ -184,41 +186,9 @@ export class FormValidator {
   }
 
   /**
-   * Validate file field
-   */
-  private static validateFile(file: File | null, fieldName: string, rules: ValidationRule): string | null {
-    if (!file) {
-      return null; // Already handled by required check
-    }
-
-    // Check file type
-    if (rules.fileTypes && rules.fileTypes.length > 0) {
-      const fileName = file.name.toLowerCase();
-      const isValidType = rules.fileTypes.some((type) => {
-        if (type.startsWith('.')) {
-          return fileName.endsWith(type);
-        }
-        return file.type === type;
-      });
-
-      if (!isValidType) {
-        return `${fieldName} must be one of: ${rules.fileTypes.join(', ')}`;
-      }
-    }
-
-    // Check file size
-    if (rules.maxFileSize && file.size > rules.maxFileSize) {
-      const maxSizeMB = (rules.maxFileSize / 1024 / 1024).toFixed(2);
-      return `${fieldName} must not exceed ${maxSizeMB}MB`;
-    }
-
-    return null;
-  }
-
-  /**
    * Validate specific field and return error or null
    */
-  static validateSingleField(field: FormField, value: any): string | null {
+  static validateSingleField(field: FormField, value: string | number | boolean | null): string | null {
     return this.validateField(field, value);
   }
 

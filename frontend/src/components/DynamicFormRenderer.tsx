@@ -27,7 +27,7 @@ export interface FormField {
 }
 
 export interface FormData {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface FormErrors {
@@ -35,12 +35,12 @@ export interface FormErrors {
 }
 
 interface DynamicFormRendererProps {
-  fields: FormField[];
-  formData: FormData;
-  errors: FormErrors;
-  onChange: (fieldId: number, fieldName: string, value: any) => void;
-  onFileChange?: (fieldId: number, fieldName: string, file: File) => void;
-  disabled?: boolean;
+  fields: FormField[]
+  formData: FormData
+  errors: FormErrors
+  onChange: (fieldId: number, fieldName: string, value: string | number | boolean | null) => void
+  onFileChange?: (fieldId: number, fieldName: string, file: File) => void
+  disabled?: boolean
 }
 
 export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
@@ -56,7 +56,7 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
   // Sort fields by displayOrder
   const sortedFields = [...fields].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
 
-  const handleChange = (field: FormField, value: any) => {
+  const handleChange = (field: FormField, value: string | number | boolean | null) => {
     onChange(field.id, field.fieldName, value);
   };
 
@@ -67,7 +67,7 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
   };
 
   const renderField = (field: FormField) => {
-    const fieldValue = formData[field.fieldName] || '';
+    const fieldValue = String(formData[field.fieldName] || '');
     const fieldError = errors[field.fieldName];
     const isRequired = field.isRequired;
 
@@ -164,12 +164,12 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
           />
         );
 
-      case 'select':
+      case 'select': {
         const options = field.validationRules?.options || [];
         return (
           <select
             className={fieldInputClassName}
-            value={fieldValue}
+            value={fieldValue || ''}
             onChange={(e) => handleChange(field, e.target.value)}
             disabled={disabled}
             required={isRequired}
@@ -192,6 +192,7 @@ export const DynamicFormRenderer: React.FC<DynamicFormRendererProps> = ({
             ))}
           </select>
         );
+      }
 
       case 'file':
         return (

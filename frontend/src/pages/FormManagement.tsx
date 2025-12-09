@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useLanguage } from '../hooks/useLanguage'
 import * as api from '../api'
 import type { Form } from '../api'
 import extractErrorMessage from '../utils/extractErrorMessage'
-import FormUploadDialog from '../components/FormUploadDialog'
+import FormUploadDialog from '../components/FormUploadDialog.tsx'
 
 const FormManagement: React.FC = () => {
   const { token, user } = useAuth()
@@ -14,7 +14,6 @@ const FormManagement: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'archived'>('all')
   const [currentPage, setCurrentPage] = useState(1)
-  const [totalForms, setTotalForms] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [showUploadDialog, setShowUploadDialog] = useState(false)
   const [editingForm, setEditingForm] = useState<Form | null>(null)
@@ -23,7 +22,7 @@ const FormManagement: React.FC = () => {
   const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null)
   const itemsPerPage = 10
 
-  async function loadForms(page: number = 1) {
+  const loadForms = useCallback(async (page: number = 1) => {
     if (!token) return
     setLoading(true)
     try {
@@ -35,7 +34,6 @@ const FormManagement: React.FC = () => {
         statusFilter === 'all' ? '' : statusFilter
       )
       setForms(res.forms)
-      setTotalForms(res.total)
       setTotalPages(Math.ceil(res.total / itemsPerPage))
       setCurrentPage(page)
     } catch (e: unknown) {
@@ -43,11 +41,11 @@ const FormManagement: React.FC = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [token, searchQuery, statusFilter])
 
   useEffect(() => {
     loadForms(1)
-  }, [token, searchQuery, statusFilter])
+  }, [loadForms])
 
   if (!user || user.userLevel !== 'admin') {
     return (

@@ -115,7 +115,7 @@ const FormSubmissionPage: React.FC = () => {
     }
   };
 
-  const handleFieldChange = (_fieldId: number, fieldName: string, value: string | number | boolean) => {
+  const handleFieldChange = (_fieldId: number, fieldName: string, value: string | number | boolean | null) => {
     setFormData((prev) => ({
       ...prev,
       [fieldName]: value
@@ -164,13 +164,27 @@ const FormSubmissionPage: React.FC = () => {
 
       const token = localStorage.getItem('auth_token') || '';
 
+      // Remove undefined values for API compatibility
+      const cleanedData = Object.entries(formData).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Record<string, string | number | boolean | null>);
+
+      const cleanPayload = {
+        formId: selectedForm.id,
+        submissionData: cleanedData,
+        status: submissionPayload.status
+      };
+
       if (existingDraft) {
         // Update existing draft
-        await API.updateSubmission(existingDraft.id, submissionPayload, token);
+        await API.updateSubmission(existingDraft.id, cleanPayload, token);
         setSuccessMessage(t('submissions.draftUpdated'));
       } else {
         // Create new draft
-        await API.createSubmission(submissionPayload, token);
+        await API.createSubmission(cleanPayload, token);
         setSuccessMessage(t('submissions.draftSaved'));
       }
 
@@ -202,9 +216,17 @@ const FormSubmissionPage: React.FC = () => {
         (s) => s.formId === selectedForm.id && s.status === 'draft'
       );
 
+      // Remove undefined values for API compatibility
+      const cleanedData = Object.entries(formData).reduce((acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Record<string, string | number | boolean | null>);
+
       const submissionPayload = {
         formId: selectedForm.id,
-        submissionData: formData,
+        submissionData: cleanedData,
         status: 'submitted'
       };
 

@@ -10,7 +10,7 @@ import Dashboard from './pages/Dashboard'
 import DocumentsPage from './pages/DocumentsPage'
 import UsersPage from './pages/UsersPage'
 import FormManagement from './pages/FormManagement'
-import FormSubmissionPage from './pages/FormSubmissionPage'
+import FormSubmissionPage from './pages/FormSubmissionPage.tsx'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
