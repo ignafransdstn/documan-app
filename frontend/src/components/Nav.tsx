@@ -38,6 +38,14 @@ const Nav: React.FC = () => {
           >
             {t('nav.documents')}
           </Link>
+          {(user?.userLevel === 'level4' || user?.userLevel === 'admin') && (
+            <Link 
+              to="/submissions" 
+              className={isActive('/submissions') ? 'active' : ''}
+            >
+              {t('submissions.mySubmissions') || 'Submissions'}
+            </Link>
+          )}
           {user?.userLevel === 'admin' && (
             <>
               <Link 

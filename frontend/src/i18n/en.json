@@ -255,5 +255,35 @@
     "JHT": "JHT",
     "BEP": "BEP",
     "PIJ": "PIJ"
+  },
+  "submissions": {
+    "title": "Form Submissions",
+    "subtitle": "Fill and submit forms for approval",
+    "fillNewForm": "Fill Form",
+    "mySubmissions": "My Submissions",
+    "selectForm": "Select a Form",
+    "chooseForm": "Choose a form...",
+    "formName": "Form Name",
+    "status": "Status",
+    "submittedAt": "Submitted At",
+    "createdAt": "Created At",
+    "saveDraft": "Save Draft",
+    "submitForm": "Submit Form",
+    "saving": "Saving...",
+    "submitting": "Submitting...",
+    "draftSaved": "Draft saved successfully",
+    "draftUpdated": "Draft updated successfully",
+    "formSubmitted": "Form submitted successfully",
+    "noFormsAvailable": "No forms available for submission",
+    "noSubmissions": "You have no submissions yet",
+    "selectOption": "-- Select --",
+    "maxFileSize": "Max file size"
+  },
+  "errors": {
+    "pleaseFixErrors": "Please fix the errors below and try again",
+    "failedToLoadForms": "Failed to load forms",
+    "failedToLoadForm": "Failed to load form details",
+    "failedToSaveDraft": "Failed to save draft",
+    "failedToSubmitForm": "Failed to submit form"
   }
 }

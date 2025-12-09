@@ -5,7 +5,7 @@ export type ApiUser = {
   id: number
   username: string
   email: string
-  userLevel: 'admin' | 'level1' | 'level2' | 'level3'
+  userLevel: 'admin' | 'level1' | 'level2' | 'level3' | 'level4'
   name?: string | null
   isApproved?: boolean
   isActive?: boolean
@@ -426,4 +426,66 @@ export async function deleteForm(id: number, token: string) {
   })
 }
 
-export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs, getForms, getForm, uploadForm, updateForm, deactivateForm, deleteForm }
+// Form Submission APIs
+export type SubmissionData = Record<string, string | number | boolean | null>
+
+export type Submission = {
+  id: number
+  formId: number
+  submittedBy: number
+  submissionData: SubmissionData
+  status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'archived'
+  approver1UserId?: number | null
+  approver2UserId?: number | null
+  submittedAt?: string
+  approvedAt?: string
+  archivedAt?: string
+  createdAt: string
+  updatedAt?: string
+  documentPath?: string | null
+  notes?: string
+  form?: Form
+}
+
+export type SubmissionListResponse = {
+  submissions: Submission[]
+  total: number
+  page: number
+  limit: number
+}
+
+export async function createSubmission(data: { formId: number; submissionData: SubmissionData; status?: string }, token: string) {
+  return request<Submission>(`/api/submissions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data)
+  })
+}
+
+export async function getSubmissionsList(token: string, page = 1, limit = 10, status?: string, formId?: number): Promise<SubmissionListResponse> {
+  const params = new URLSearchParams()
+  params.set('page', String(page))
+  params.set('limit', String(limit))
+  if (status) params.set('status', status)
+  if (formId) params.set('formId', String(formId))
+  
+  return request<SubmissionListResponse>(`/api/submissions?${params}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export async function getSubmissionDetail(id: number, token: string): Promise<Submission> {
+  return request<Submission>(`/api/submissions/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export async function updateSubmission(id: number, data: { formId?: number; submissionData?: SubmissionData; status?: string }, token: string): Promise<Submission> {
+  return request<Submission>(`/api/submissions/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data)
+  })
+}
+
+export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs, getForms, getForm, uploadForm, updateForm, deactivateForm, deleteForm, createSubmission, getSubmissionsList, getSubmissionDetail, updateSubmission }

@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard'
 import DocumentsPage from './pages/DocumentsPage'
 import UsersPage from './pages/UsersPage'
 import FormManagement from './pages/FormManagement'
+import FormSubmissionPage from './pages/FormSubmissionPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
@@ -45,6 +46,11 @@ function App() {
                 <Route path="/forms" element={
                   <ProtectedRoute>
                     <FormManagement />
+                  </ProtectedRoute>
+                } />
+                <Route path="/submissions" element={
+                  <ProtectedRoute>
+                    <FormSubmissionPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/" element={<Navigate to="/login" replace />} />

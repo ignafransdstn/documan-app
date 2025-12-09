@@ -254,5 +254,35 @@
     "JHT": "JHT",
     "BEP": "BEP",
     "PIJ": "PIJ"
+  },
+  "submissions": {
+    "title": "Pengajuan Formulir",
+    "subtitle": "Isi dan kirim formulir untuk persetujuan",
+    "fillNewForm": "Isi Formulir",
+    "mySubmissions": "Pengajuan Saya",
+    "selectForm": "Pilih Formulir",
+    "chooseForm": "Pilih formulir...",
+    "formName": "Nama Formulir",
+    "status": "Status",
+    "submittedAt": "Diajukan Pada",
+    "createdAt": "Dibuat Pada",
+    "saveDraft": "Simpan Draft",
+    "submitForm": "Kirim Formulir",
+    "saving": "Menyimpan...",
+    "submitting": "Mengirim...",
+    "draftSaved": "Draft berhasil disimpan",
+    "draftUpdated": "Draft berhasil diperbarui",
+    "formSubmitted": "Formulir berhasil dikirim",
+    "noFormsAvailable": "Tidak ada formulir yang tersedia untuk pengajuan",
+    "noSubmissions": "Anda belum memiliki pengajuan",
+    "selectOption": "-- Pilih --",
+    "maxFileSize": "Ukuran file maksimal"
+  },
+  "errors": {
+    "pleaseFixErrors": "Silakan perbaiki kesalahan di bawah dan coba lagi",
+    "failedToLoadForms": "Gagal memuat formulir",
+    "failedToLoadForm": "Gagal memuat detail formulir",
+    "failedToSaveDraft": "Gagal menyimpan draft",
+    "failedToSubmitForm": "Gagal mengirim formulir"
   }
 }
