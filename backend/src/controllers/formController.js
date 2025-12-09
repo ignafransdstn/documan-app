@@ -21,11 +21,11 @@ const { Op } = require('sequelize');
  */
 exports.uploadFormTemplate = async (req, res) => {
   try {
-    const { name, description, approver1UserId, approver2UserId } = req.body;
+    const { name, description, approver1UserId, approver2UserId } = req.body || {};
     const userId = req.user.id;
     
     // Validate input
-    if (!name || !name.trim()) {
+    if (!name || typeof name !== 'string' || !name.trim()) {
       return res.status(400).json({ error: 'Form name is required' });
     }
 
@@ -219,6 +219,11 @@ exports.updateForm = async (req, res) => {
     // Check permission (only creator can edit)
     if (form.createdBy !== userId && req.user.userLevel !== 'admin') {
       return res.status(403).json({ error: 'You do not have permission to edit this form' });
+    }
+
+    // Validate name if provided
+    if (name !== undefined && (!name || !name.trim())) {
+      return res.status(400).json({ error: 'Form name cannot be empty' });
     }
 
     // Update
