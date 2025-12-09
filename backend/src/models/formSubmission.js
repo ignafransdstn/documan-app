@@ -50,6 +50,14 @@ module.exports = (sequelize, DataTypes) => {
       notes: {
         type: DataTypes.TEXT,
         allowNull: true
+      },
+      documentGeneratedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
+      },
+      documentPath: {
+        type: DataTypes.STRING,
+        allowNull: true
       }
     },
     {
