@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   FormNotification.associate = (models) => {
-    FormNotification.belongsTo(models.FormSubmission, { foreignKey: 'submissionId' });
+    FormNotification.belongsTo(models.FormSubmission, { foreignKey: 'submissionId', as: 'submission' });
     FormNotification.belongsTo(models.User, { foreignKey: 'recipientUserId', as: 'recipient' });
   };
 
