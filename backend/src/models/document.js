@@ -109,6 +109,18 @@ module.exports = (sequelize) => {
     company: {
       type: DataTypes.ENUM('JH', 'JHT', 'BEP', 'PIJ'),
       allowNull: true
+    },
+    formSubmissionId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'FormSubmissions',
+        key: 'id'
+      }
+    },
+    generatedFromForm: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     }
   }, {
     sequelize,

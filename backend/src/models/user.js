@@ -30,7 +30,7 @@ module.exports = (sequelize) => {
       }
     },
     userLevel: {
-      type: DataTypes.ENUM('admin', 'level1', 'level2', 'level3'),
+      type: DataTypes.ENUM('admin', 'level1', 'level2', 'level3', 'level4'),
       allowNull: false,
       defaultValue: 'level3'
     },
