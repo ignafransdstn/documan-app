@@ -90,7 +90,6 @@ app.use('/api/submissions', submissionRoutes);
 app.use('/api/approvals', formApprovalRoutes);
 app.use('/api/notifications', formNotificationRoutes);
 app.use('/api/document-generation', documentGenerationRoutes);
-app.use('/api/email', emailNotificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
