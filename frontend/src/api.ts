@@ -90,6 +90,35 @@ export type Summary = {
   recentDocuments: Array<Record<string, unknown>>
 }
 
+export type FormField = {
+  id: number
+  formId: number
+  fieldName: string
+  fieldType: 'text' | 'email' | 'number' | 'date' | 'textarea' | 'select' | 'checkbox' | 'radio'
+  isRequired: boolean
+  placeholder: string
+  displayOrder: number
+  validationRules?: Record<string, unknown> | null
+}
+
+export type Form = {
+  id: number
+  name: string
+  description?: string | null
+  status: 'active' | 'archived' | 'deleted'
+  createdBy: number
+  createdAt: string
+  updatedAt: string
+  fields?: FormField[]
+}
+
+export type FormListResponse = {
+  forms: Form[]
+  total: number
+  page: number
+  limit: number
+}
+
 export type ActivityLog = {
   id: number
   userId: number
@@ -348,4 +377,53 @@ export async function getActivityLogs(token: string, limit = 50, offset = 0): Pr
   })
 }
 
-export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs }
+// Form Management APIs
+export async function getForms(token: string, page = 1, limit = 10, search = '', status = ''): Promise<FormListResponse> {
+  const params = new URLSearchParams()
+  params.set('page', String(page))
+  params.set('limit', String(limit))
+  if (search) params.set('search', search)
+  if (status) params.set('status', status)
+  
+  return request<FormListResponse>(`/api/forms?${params}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export async function getForm(id: number, token: string): Promise<Form> {
+  return request<Form>(`/api/forms/${id}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export async function uploadForm(formData: FormData, token: string) {
+  return request(`/api/forms/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData
+  })
+}
+
+export async function updateForm(id: number, data: { name?: string; description?: string }, token: string) {
+  return request(`/api/forms/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify(data)
+  })
+}
+
+export async function deactivateForm(id: number, token: string) {
+  return request(`/api/forms/${id}/deactivate`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export async function deleteForm(id: number, token: string) {
+  return request(`/api/forms/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` }
+  })
+}
+
+export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs, getForms, getForm, uploadForm, updateForm, deactivateForm, deleteForm }
