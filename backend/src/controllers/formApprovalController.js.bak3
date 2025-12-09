@@ -1,4 +1,3 @@
-const { notifyApproval, notifyRejection } = require('./emailNotificationController');
 const { FormApproval, FormSubmission, Form, User, FormNotification } = require('../models');
 
 /**
@@ -204,9 +203,6 @@ exports.approveSubmission = async (req, res) => {
 
     await submission.save();
 
-    // Send email notification to submitter
-    await notifyApproval(submissionId, userId);
-
     // Create notification for submitter
     if (submission.submittedBy) {
       await FormNotification.create({
@@ -280,9 +276,6 @@ exports.rejectSubmission = async (req, res) => {
     submission.status = 'rejected';
     submission.notes = `Rejected by ${req.user.username}: ${rejectionReason}${rejectionComments ? ' - ' + rejectionComments : ''}`;
     await submission.save();
-
-    // Send email notification to submitter
-    await notifyRejection(submissionId, userId, rejectionReason);
 
     // Create notification for submitter
     if (submission.submittedBy) {

@@ -63,7 +63,7 @@ async function notifySubmission(submissionId, res) {
     // Log notification
     await FormNotification.create({
       submissionId: submission.id,
-      userId: submission.submitterId,
+      recipientUserId: submission.submittedBy,
       type: 'submitted',
       message: `Form "${submission.form.name}" submitted and awaiting approval`,
       isRead: false
@@ -128,7 +128,7 @@ async function notifyApproval(submissionId, approverId, res) {
     // Log notification
     await FormNotification.create({
       submissionId: submission.id,
-      userId: submission.submitterId,
+      recipientUserId: submission.submittedBy,
       type: 'approved',
       message: `Your form "${submission.form.name}" has been approved by ${approver.username}`,
       isRead: false
@@ -192,7 +192,7 @@ async function notifyRejection(submissionId, approverId, rejectionReason, res) {
     // Log notification with reason
     await FormNotification.create({
       submissionId: submission.id,
-      userId: submission.submitterId,
+      recipientUserId: submission.submittedBy,
       type: 'rejected',
       message: `Your form "${submission.form.name}" has been rejected by ${approver.username}. Reason: ${rejectionReason}`,
       isRead: false
@@ -249,7 +249,7 @@ async function notifyArchive(submissionId, documentId, res) {
     // Log notification
     await FormNotification.create({
       submissionId: submission.id,
-      userId: submission.submitterId,
+      recipientUserId: submission.submittedBy,
       type: 'archived',
       message: `Your form "${submission.form.name}" has been archived (Document ID: ${documentId})`,
       isRead: false

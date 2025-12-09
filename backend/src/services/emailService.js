@@ -294,7 +294,7 @@ async function sendEmail(to, template, data) {
       to
     };
   } catch (error) {
-    console.error(`Error sending email to ${to}:`, error);
+    if (process.env.NODE_ENV !== 'test') { console.error(`Error sending email to ${to}:`, error); }
     return {
       success: false,
       error: error.message,
