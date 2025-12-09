@@ -11,6 +11,10 @@ module.exports = (sequelize) => {
         foreignKey: 'parentDocumentId',
         as: 'subDocuments'
       });
+      Document.belongsTo(models.FormSubmission, {
+        foreignKey: 'formSubmissionId',
+        as: 'submission'
+      });
     }
   }
 
