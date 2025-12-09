@@ -13,6 +13,7 @@ const documentRoutes = require('./routes/documents');
 const userRoutes = require('./routes/users');
 const activityLogRoutes = require('./routes/activityLogs');
 const formRoutes = require('./routes/forms');
+const submissionRoutes = require('./routes/submissions');
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/forms', formRoutes);
+app.use('/api/submissions', submissionRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

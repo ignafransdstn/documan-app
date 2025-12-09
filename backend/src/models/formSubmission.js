@@ -59,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   FormSubmission.associate = (models) => {
-    FormSubmission.belongsTo(models.Form, { foreignKey: 'formId' });
+    FormSubmission.belongsTo(models.Form, { foreignKey: 'formId', as: 'form' });
     FormSubmission.belongsTo(models.User, { foreignKey: 'submittedBy', as: 'submitter' });
     FormSubmission.belongsTo(models.User, { foreignKey: 'approver1UserId', as: 'approver1' });
     FormSubmission.belongsTo(models.User, { foreignKey: 'approver2UserId', as: 'approver2' });
