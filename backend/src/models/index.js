@@ -29,7 +29,7 @@ const modelDefiners = [
 
 // Initialize models
 for (const modelDefiner of modelDefiners) {
-  modelDefiner(sequelize);
+  modelDefiner(sequelize, Sequelize.DataTypes);
 }
 
 // Apply associations
