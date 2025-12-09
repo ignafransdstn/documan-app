@@ -14,6 +14,7 @@ const userRoutes = require('./routes/users');
 const activityLogRoutes = require('./routes/activityLogs');
 const formRoutes = require('./routes/forms');
 const submissionRoutes = require('./routes/submissions');
+const formApprovalRoutes = require('./routes/formApprovals');
 
 const app = express();
 
@@ -83,6 +84,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
 app.use('/api/forms', formRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/approvals', formApprovalRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
