@@ -12,13 +12,6 @@ const authRoutes = require('./routes/auth');
 const documentRoutes = require('./routes/documents');
 const userRoutes = require('./routes/users');
 const activityLogRoutes = require('./routes/activityLogs');
-const formRoutes = require('./routes/forms');
-const submissionRoutes = require('./routes/submissions');
-const formApprovalRoutes = require('./routes/formApprovals');
-const formNotificationRoutes = require('./routes/formNotifications');
-const documentGenerationRoutes = require('./routes/documentGeneration');
-const emailNotificationRoutes = require('./routes/emailNotifications');
-const archiveRoutes = require('./routes/archive');
 
 const app = express();
 
@@ -86,13 +79,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
-app.use('/api/forms', formRoutes);
-app.use('/api/submissions', submissionRoutes);
-app.use('/api/approvals', formApprovalRoutes);
-app.use('/api/notifications', formNotificationRoutes);
-app.use('/api/document-generation', documentGenerationRoutes);
-app.use('/api/email', emailNotificationRoutes);
-app.use('/api/archive', archiveRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

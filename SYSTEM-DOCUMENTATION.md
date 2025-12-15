@@ -23,7 +23,7 @@ Document Management System adalah aplikasi web full-stack untuk mengelola dokume
 - Session management
 
 ✅ **Document Management**
-- Upload dokumen (PDF, DOC, DOCX, XLS, XLSX, etc)
+- Upload dokumen (PDF, DOCX)
 - Download dokumen
 - Sub-document support (hierarchical structure)
 - Document metadata tracking

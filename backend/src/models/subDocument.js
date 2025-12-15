@@ -49,6 +49,11 @@ module.exports = (sequelize) => {
       allowNull: true,
       defaultValue: ''
     },
+    category: {
+      type: DataTypes.ENUM('Corporate Document', 'Permit Document'),
+      allowNull: false,
+      defaultValue: 'Corporate Document'
+    },
     status: {
       type: DataTypes.ENUM('active', 'archived', 'deleted'),
       defaultValue: 'active'

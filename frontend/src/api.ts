@@ -1,5 +1,5 @@
-// Use relative URL so it works through nginx proxy on any domain
-const API_BASE = ''
+// Use absolute URL for internet access via Localtunnel (stable subdomains)
+const API_BASE = 'https://documan-app-api.loca.lt'
 
 export type ApiUser = {
   id: number
@@ -36,6 +36,7 @@ export type ApiSubDocument = {
   originDocument?: string
   previousOwner?: string
   company?: string
+  category?: 'Corporate Document' | 'Permit Document'
 }
 
 export interface ApiDocument {
@@ -63,6 +64,7 @@ export interface ApiDocument {
   originDocument?: string
   previousOwner?: string
   company?: string
+  category?: 'Corporate Document' | 'Permit Document'
   subDocuments?: ApiSubDocument[]
 }
 
@@ -88,35 +90,6 @@ export type Summary = {
   totalSubDocuments: number
   activeSessions: number
   recentDocuments: Array<Record<string, unknown>>
-}
-
-export type FormField = {
-  id: number
-  formId: number
-  fieldName: string
-  fieldType: 'text' | 'email' | 'number' | 'date' | 'textarea' | 'select' | 'checkbox' | 'radio'
-  isRequired: boolean
-  placeholder: string
-  displayOrder: number
-  validationRules?: Record<string, unknown> | null
-}
-
-export type Form = {
-  id: number
-  name: string
-  description?: string | null
-  status: 'active' | 'archived' | 'deleted'
-  createdBy: number
-  createdAt: string
-  updatedAt: string
-  fields?: FormField[]
-}
-
-export type FormListResponse = {
-  forms: Form[]
-  total: number
-  page: number
-  limit: number
 }
 
 export type ActivityLog = {
@@ -377,115 +350,4 @@ export async function getActivityLogs(token: string, limit = 50, offset = 0): Pr
   })
 }
 
-// Form Management APIs
-export async function getForms(token: string, page = 1, limit = 10, search = '', status = ''): Promise<FormListResponse> {
-  const params = new URLSearchParams()
-  params.set('page', String(page))
-  params.set('limit', String(limit))
-  if (search) params.set('search', search)
-  if (status) params.set('status', status)
-  
-  return request<FormListResponse>(`/api/forms?${params}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-export async function getForm(id: number, token: string): Promise<Form> {
-  return request<Form>(`/api/forms/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-export async function uploadForm(formData: FormData, token: string) {
-  return request(`/api/forms/upload`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData
-  })
-}
-
-export async function updateForm(id: number, data: { name?: string; description?: string }, token: string) {
-  return request(`/api/forms/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify(data)
-  })
-}
-
-export async function deactivateForm(id: number, token: string) {
-  return request(`/api/forms/${id}/deactivate`, {
-    method: 'PATCH',
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-export async function deleteForm(id: number, token: string) {
-  return request(`/api/forms/${id}`, {
-    method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-// Form Submission APIs
-export type SubmissionData = Record<string, string | number | boolean | null>
-
-export type Submission = {
-  id: number
-  formId: number
-  submittedBy: number
-  submissionData: SubmissionData
-  status: 'draft' | 'submitted' | 'approved' | 'rejected' | 'archived'
-  approver1UserId?: number | null
-  approver2UserId?: number | null
-  submittedAt?: string
-  approvedAt?: string
-  archivedAt?: string
-  createdAt: string
-  updatedAt?: string
-  documentPath?: string | null
-  notes?: string
-  form?: Form
-}
-
-export type SubmissionListResponse = {
-  submissions: Submission[]
-  total: number
-  page: number
-  limit: number
-}
-
-export async function createSubmission(data: { formId: number; submissionData: SubmissionData; status?: string }, token: string) {
-  return request<Submission>(`/api/submissions`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify(data)
-  })
-}
-
-export async function getSubmissionsList(token: string, page = 1, limit = 10, status?: string, formId?: number): Promise<SubmissionListResponse> {
-  const params = new URLSearchParams()
-  params.set('page', String(page))
-  params.set('limit', String(limit))
-  if (status) params.set('status', status)
-  if (formId) params.set('formId', String(formId))
-  
-  return request<SubmissionListResponse>(`/api/submissions?${params}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-export async function getSubmissionDetail(id: number, token: string): Promise<Submission> {
-  return request<Submission>(`/api/submissions/${id}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-}
-
-export async function updateSubmission(id: number, data: { formId?: number; submissionData?: SubmissionData; status?: string }, token: string): Promise<Submission> {
-  return request<Submission>(`/api/submissions/${id}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-    body: JSON.stringify(data)
-  })
-}
-
-export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs, getForms, getForm, uploadForm, updateForm, deactivateForm, deleteForm, createSubmission, getSubmissionsList, getSubmissionDetail, updateSubmission }
+export default { login, getDocuments, uploadDocument, uploadSubDocument, getUsers, updateUser, deleteUser, resetUserPassword, signup, approveUser, setUserActive, getSummary, downloadDocument, downloadSubDocument, updateSubDocumentNumber, updateDocumentInfo, updateSubDocumentInfo, getActivityLogs }

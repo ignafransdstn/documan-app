@@ -11,10 +11,6 @@ module.exports = (sequelize) => {
         foreignKey: 'parentDocumentId',
         as: 'subDocuments'
       });
-      Document.belongsTo(models.FormSubmission, {
-        foreignKey: 'formSubmissionId',
-        as: 'submission'
-      });
     }
   }
 
@@ -48,6 +44,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING(350),
       allowNull: true,
       defaultValue: ''
+    },
+    category: {
+      type: DataTypes.ENUM('Corporate Document', 'Permit Document'),
+      allowNull: false,
+      defaultValue: 'Corporate Document'
     },
     status: {
       type: DataTypes.ENUM('active', 'archived', 'deleted'),
@@ -113,18 +114,6 @@ module.exports = (sequelize) => {
     company: {
       type: DataTypes.ENUM('JH', 'JHT', 'BEP', 'PIJ'),
       allowNull: true
-    },
-    formSubmissionId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'FormSubmissions',
-        key: 'id'
-      }
-    },
-    generatedFromForm: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
     }
   }, {
     sequelize,

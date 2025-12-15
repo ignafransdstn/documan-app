@@ -19,12 +19,7 @@ const modelDefiners = [
   require('./user'),
   require('./document'),
   require('./subDocument'),
-  require('./activityLog'),
-  require('./form'),
-  require('./formField'),
-  require('./formSubmission'),
-  require('./formApproval'),
-  require('./formNotification')
+  require('./activityLog')
 ];
 
 // Initialize models

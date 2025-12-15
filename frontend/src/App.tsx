@@ -9,12 +9,36 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import DocumentsPage from './pages/DocumentsPage'
 import UsersPage from './pages/UsersPage'
-import FormManagement from './pages/FormManagement'
-import FormSubmissionPage from './pages/FormSubmissionPage.tsx'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { token } = useAuth()
   if (!token) return <Navigate to="/login" replace />
+  return <>{children}</>
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { token, user } = useAuth()
+  
+  // Debug logging
+  console.log('AdminRoute check - token:', !!token, 'user:', user)
+  
+  // If no token, redirect to login
+  if (!token) {
+    console.log('AdminRoute: No token, redirecting to login')
+    return <Navigate to="/login" replace />
+  }
+  // If user data not loaded yet, show loading (don't redirect yet)
+  if (!user) {
+    console.log('AdminRoute: User not loaded yet, showing loading')
+    return <div style={{ padding: '2rem', textAlign: 'center', color: '#9aa4b2' }}>Loading...</div>
+  }
+  // If user is not admin, redirect to dashboard
+  if (user.userLevel !== 'admin') {
+    console.log('AdminRoute: User level is', user.userLevel, ', redirecting to dashboard')
+    return <Navigate to="/dashboard" replace />
+  }
+  // User is admin, allow access
+  console.log('AdminRoute: User is admin, allowing access')
   return <>{children}</>
 }
 
@@ -39,19 +63,9 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="/users" element={
-                  <ProtectedRoute>
+                  <AdminRoute>
                     <UsersPage />
-                  </ProtectedRoute>
-                } />
-                <Route path="/forms" element={
-                  <ProtectedRoute>
-                    <FormManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="/submissions" element={
-                  <ProtectedRoute>
-                    <FormSubmissionPage />
-                  </ProtectedRoute>
+                  </AdminRoute>
                 } />
                 <Route path="/" element={<Navigate to="/login" replace />} />
               </Routes>

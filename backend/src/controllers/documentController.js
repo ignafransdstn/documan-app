@@ -9,7 +9,7 @@ const createDocument = async (req, res) => {
   
   try {
     const { 
-      title, location, status, description, longitude, latitude,
+      title, location, status, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
       publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
     } = req.body;
@@ -61,6 +61,7 @@ const createDocument = async (req, res) => {
       documentNo,
       title,
       location,
+      category: category || 'Corporate Document',
       longitude: longitude ? parseFloat(longitude) : null,
       latitude: latitude ? parseFloat(latitude) : null,
       description: description || '',
@@ -115,7 +116,7 @@ const createDocument = async (req, res) => {
 const createSubDocument = async (req, res) => {
   try {
     const { 
-      title, location, status, parentDocumentId, subDocumentNo, description, longitude, latitude,
+      title, location, status, parentDocumentId, subDocumentNo, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
       publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
     } = req.body;
@@ -156,6 +157,7 @@ const createSubDocument = async (req, res) => {
     const subDocument = await SubDocument.create({
       title,
       location,
+      category: category || 'Corporate Document',
       longitude: longitude ? parseFloat(longitude) : null,
       latitude: latitude ? parseFloat(latitude) : null,
       description: description || '',
@@ -331,7 +333,7 @@ const updateDocumentInfo = async (req, res) => {
     }
 
     const { 
-      title, location, description, longitude, latitude,
+      title, location, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
       publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
     } = req.body;
@@ -350,6 +352,7 @@ const updateDocumentInfo = async (req, res) => {
     if (title !== undefined) document.title = title;
     if (location !== undefined) document.location = location;
     if (description !== undefined) document.description = description;
+    if (category !== undefined) document.category = category;
     if (longitude !== undefined) document.longitude = longitude ? parseFloat(longitude) : null;
     if (latitude !== undefined) document.latitude = latitude ? parseFloat(latitude) : null;
     if (certificateType !== undefined) document.certificateType = certificateType;
@@ -398,7 +401,7 @@ const updateSubDocumentInfo = async (req, res) => {
     }
 
     const { 
-      title, location, description, longitude, latitude,
+      title, location, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
       publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
     } = req.body;
@@ -417,6 +420,7 @@ const updateSubDocumentInfo = async (req, res) => {
     if (title !== undefined) subDocument.title = title;
     if (location !== undefined) subDocument.location = location;
     if (description !== undefined) subDocument.description = description;
+    if (category !== undefined) subDocument.category = category;
     if (longitude !== undefined) subDocument.longitude = longitude ? parseFloat(longitude) : null;
     if (latitude !== undefined) subDocument.latitude = latitude ? parseFloat(latitude) : null;
     if (certificateType !== undefined) subDocument.certificateType = certificateType;

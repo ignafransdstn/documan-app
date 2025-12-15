@@ -8,11 +8,7 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0',
     strictPort: false,
-    hmr: {
-      protocol: 'wss',
-      host: undefined,
-      clientPort: 443,
-    },
+    hmr: false,
     proxy: {
       '/api': {
         target: 'http://localhost:5001',

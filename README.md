@@ -1,5 +1,16 @@
 # DocuMan - Document Management System
 
+> **� [QUICK START](./QUICK-START.md)** - Mulai dalam 5 menit!
+
+> **📚 Dokumentasi Lengkap:** 
+> - ⚡ [Quick Start Guide](./QUICK-START.md) - Setup cepat (5 menit)
+> - 📖 [Dokumentasi Singkat](./DOKUMENTASI-SINGKAT.md) - Overview & fitur utama
+> - 📘 [Dokumentasi Lengkap](./DOKUMENTASI-LENGKAP.md) - Detail teknis lengkap
+> - 📑 [Dokumentasi Index](./DOKUMENTASI-INDEX.md) - Daftar semua dokumentasi
+> - 📊 [Business Process](./docs/BUSINESS-PROCESS-DOCUMENTATION.md) - Alur bisnis & workflow
+> - 🎯 [Features & Functions](./docs/FEATURES-DOCUMENTATION.md) - Detail fitur sistem
+> - 🗺️ [Flowcharts](./docs/FLOWCHART-DOCUMENTATION.md) - Diagram alur visual
+
 ## 📋 Overview
 
 **DocuMan** adalah sistem manajemen dokumen berbasis web yang dirancang untuk mengelola dokumen master dan sub-dokumen dengan fitur keamanan tinggi, tracking GPS, dan role-based access control.

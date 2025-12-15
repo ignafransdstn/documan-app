@@ -4,9 +4,10 @@ import type { ApiDocument, ApiSubDocument } from '../api'
 import { useAuth } from '../hooks/useAuth'
 import { useLanguage } from '../hooks/useLanguage'
 import extractErrorMessage from '../utils/extractErrorMessage'
+import LocationInput from '../components/LocationInput'
 
 const DocumentsPage: React.FC = () => {
-  const { token } = useAuth()
+  const { token, user } = useAuth()
   const { t } = useLanguage()
   const [docs, setDocs] = useState<ApiDocument[]>([])
   const [loading, setLoading] = useState(false)
@@ -29,17 +30,19 @@ const DocumentsPage: React.FC = () => {
   const [previousOwner, setPreviousOwner] = useState('')
   const [company, setCompany] = useState('')
   const [documentType, setDocumentType] = useState<'master' | 'sub'>('master')
+  const [category, setCategory] = useState<'Corporate Document' | 'Permit Document'>('Corporate Document')
   const [subDocumentNo, setSubDocumentNo] = useState('')
   const [parentDocumentId, setParentDocumentId] = useState('')
   const [expandedDocs, setExpandedDocs] = useState<Set<number>>(new Set())
   const [editingSubDoc, setEditingSubDoc] = useState<{ id: number; currentNo: string } | null>(null)
   const [newSubDocNo, setNewSubDocNo] = useState('')
-  const [editingDoc, setEditingDoc] = useState<{ id: number; title: string; location: string; longitude?: number | null; latitude?: number | null; description: string; type: 'master' | 'sub'; certificateType?: string; landSize?: string; areaName?: string; projectName?: string; zoneUrl?: string; zoneRtdr?: string; publishDate?: string; expiredDate?: string; documentObtained?: string; originDocument?: string; previousOwner?: string; company?: string } | null>(null)
+  const [editingDoc, setEditingDoc] = useState<{ id: number; title: string; location: string; longitude?: number | null; latitude?: number | null; description: string; category?: 'Corporate Document' | 'Permit Document'; type: 'master' | 'sub'; certificateType?: string; landSize?: string; areaName?: string; projectName?: string; zoneUrl?: string; zoneRtdr?: string; publishDate?: string; expiredDate?: string; documentObtained?: string; originDocument?: string; previousOwner?: string; company?: string } | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editLocation, setEditLocation] = useState('')
   const [editLongitude, setEditLongitude] = useState('')
   const [editLatitude, setEditLatitude] = useState('')
   const [editDescription, setEditDescription] = useState('')
+  const [editCategory, setEditCategory] = useState<'Corporate Document' | 'Permit Document'>('Corporate Document')
   const [editCertificateType, setEditCertificateType] = useState('')
   const [editLandSize, setEditLandSize] = useState('')
   const [editAreaName, setEditAreaName] = useState('')
@@ -52,6 +55,7 @@ const DocumentsPage: React.FC = () => {
   const [editOriginDocument, setEditOriginDocument] = useState('')
   const [editPreviousOwner, setEditPreviousOwner] = useState('')
   const [editCompany, setEditCompany] = useState('')
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string; fields?: string[] } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [masterFilter, setMasterFilter] = useState<'all' | 'master-only' | 'master-with-subs'>('all')
   const [showUploadForm, setShowUploadForm] = useState(false)
@@ -162,6 +166,7 @@ const DocumentsPage: React.FC = () => {
     fd.append('document', file)
     fd.append('title', title)
     fd.append('location', location)
+    fd.append('category', category)
     if (longitude) fd.append('longitude', longitude)
     if (latitude) fd.append('latitude', latitude)
     fd.append('description', description)
@@ -206,6 +211,7 @@ const DocumentsPage: React.FC = () => {
       setLongitude('')
       setLatitude('')
       setDescription('')
+      setCategory('Corporate Document')
       setCertificateType('')
       setLandSize('')
       setAreaName('')
@@ -289,13 +295,14 @@ const DocumentsPage: React.FC = () => {
     }
   }
 
-  const openDocEditModal = (id: number, title: string, location: string, description: string, type: 'master' | 'sub', longitude?: number | null, latitude?: number | null, certificateType?: string, landSize?: string, areaName?: string, projectName?: string, zoneUrl?: string, zoneRtdr?: string, publishDate?: string, expiredDate?: string, documentObtained?: string, originDocument?: string, previousOwner?: string, company?: string) => {
+  const openDocEditModal = (id: number, title: string, location: string, description: string, type: 'master' | 'sub', longitude?: number | null, latitude?: number | null, certificateType?: string, landSize?: string, areaName?: string, projectName?: string, zoneUrl?: string, zoneRtdr?: string, publishDate?: string, expiredDate?: string, documentObtained?: string, originDocument?: string, previousOwner?: string, company?: string, category?: 'Corporate Document' | 'Permit Document') => {
     setEditingDoc({ id, title, location, longitude, latitude, description, type, certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr, publishDate, expiredDate, documentObtained, originDocument, previousOwner, company })
     setEditTitle(title)
     setEditLocation(location)
     setEditLongitude(longitude?.toString() || '')
     setEditLatitude(latitude?.toString() || '')
     setEditDescription(description)
+    setEditCategory(category || 'Corporate Document')
     setEditCertificateType(certificateType || '')
     setEditLandSize(landSize || '')
     setEditAreaName(areaName || '')
@@ -336,10 +343,33 @@ const DocumentsPage: React.FC = () => {
     if (!editingDoc) return
 
     try {
+      // Track which fields have changed
+      const updatedFields: string[] = []
+      
+      if (editTitle !== editingDoc.title) updatedFields.push('Title')
+      if (editLocation !== editingDoc.location) updatedFields.push('Location')
+      if (editDescription !== (editingDoc.description || '')) updatedFields.push('Description')
+      if (editCategory !== (editingDoc.category || 'Corporate Document')) updatedFields.push('Category')
+      if (editLongitude !== (editingDoc.longitude?.toString() || '')) updatedFields.push('Longitude')
+      if (editLatitude !== (editingDoc.latitude?.toString() || '')) updatedFields.push('Latitude')
+      if (editCertificateType !== (editingDoc.certificateType || '')) updatedFields.push('Certificate Type')
+      if (editLandSize !== (editingDoc.landSize || '')) updatedFields.push('Land Size')
+      if (editAreaName !== (editingDoc.areaName || '')) updatedFields.push('Area Name')
+      if (editProjectName !== (editingDoc.projectName || '')) updatedFields.push('Project Name')
+      if (editZoneUrl !== (editingDoc.zoneUrl || '')) updatedFields.push('Zone URL')
+      if (editZoneRtdr !== (editingDoc.zoneRtdr || '')) updatedFields.push('Zone RTDR')
+      if (editPublishDate !== (editingDoc.publishDate || '')) updatedFields.push('Publish Date')
+      if (editExpiredDate !== (editingDoc.expiredDate || '')) updatedFields.push('Expired Date')
+      if (editDocumentObtained !== (editingDoc.documentObtained || '')) updatedFields.push('Document Obtained')
+      if (editOriginDocument !== (editingDoc.originDocument || '')) updatedFields.push('Origin Document')
+      if (editPreviousOwner !== (editingDoc.previousOwner || '')) updatedFields.push('Previous Owner')
+      if (editCompany !== (editingDoc.company || '')) updatedFields.push('Company')
+
       const updateData = {
         title: editTitle,
         location: editLocation,
         description: editDescription,
+        category: editCategory,
         longitude: editLongitude || undefined,
         latitude: editLatitude || undefined,
         certificateType: editCertificateType || undefined,
@@ -362,6 +392,17 @@ const DocumentsPage: React.FC = () => {
         await api.updateSubDocumentInfo(editingDoc.id, updateData, token || undefined)
       }
       
+      // Show notification with updated fields
+      if (updatedFields.length > 0) {
+        setNotification({
+          type: 'success',
+          message: `Document updated successfully`,
+          fields: updatedFields
+        })
+        // Auto-hide notification after 5 seconds
+        setTimeout(() => setNotification(null), 5000)
+      }
+      
       // Reload documents
       const res = await api.getDocuments(token || undefined)
       setDocs(res)
@@ -369,7 +410,11 @@ const DocumentsPage: React.FC = () => {
       closeDocEditModal()
     } catch (err: unknown) {
       console.error(extractErrorMessage(err))
-      alert('Update failed: ' + extractErrorMessage(err))
+      setNotification({
+        type: 'error',
+        message: 'Update failed: ' + extractErrorMessage(err)
+      })
+      setTimeout(() => setNotification(null), 5000)
     }
   }
 
@@ -496,18 +541,78 @@ const DocumentsPage: React.FC = () => {
 
   return (
     <div className="documents-page-container">
+      {/* Notification Toast */}
+      {notification && (
+        <div style={{
+          position: 'fixed',
+          top: '2rem',
+          right: '2rem',
+          padding: '1.25rem',
+          borderRadius: '8px',
+          backgroundColor: notification.type === 'success' ? '#10b981' : '#ef4444',
+          color: '#ffffff',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+          zIndex: 10000,
+          maxWidth: '400px',
+          animation: 'slideIn 0.3s ease-out',
+          fontWeight: 500
+        }}>
+          <div style={{ marginBottom: '0.5rem', fontSize: '0.95rem' }}>
+            {notification.type === 'success' ? '✅' : '❌'} {notification.message}
+          </div>
+          {notification.fields && notification.fields.length > 0 && (
+            <div style={{ 
+              fontSize: '0.85rem', 
+              opacity: 0.95,
+              marginTop: '0.5rem',
+              paddingTop: '0.5rem',
+              borderTop: '1px solid rgba(255,255,255,0.3)'
+            }}>
+              <div style={{ fontWeight: 600, marginBottom: '0.3rem' }}>Updated fields:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {notification.fields.map((field, idx) => (
+                  <span key={idx} style={{
+                    backgroundColor: 'rgba(255,255,255,0.2)',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '3px',
+                    fontSize: '0.8rem'
+                  }}>
+                    {field}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      <style>{`
+        @keyframes slideIn {
+          from {
+            transform: translateX(400px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `}</style>
+
       <div className="documents-header">
         <div>
           <h1 className="documents-main-title">{t('documents.pageTitle')}</h1>
           <p className="documents-subtitle">{t('documents.pageSubtitle')}</p>
         </div>
-        <button 
-          className="btn primary" 
-          onClick={() => setShowUploadForm(!showUploadForm)}
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <span style={{ fontSize: '1.2rem' }}>+</span> {t('buttons.addDocument')}
-        </button>
+        {(user?.userLevel === 'admin' || user?.userLevel === 'level1' || user?.userLevel === 'level2') && (
+          <button 
+            className="btn primary" 
+            onClick={() => setShowUploadForm(!showUploadForm)}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          >
+            <span style={{ fontSize: '1.2rem' }}>+</span> {t('buttons.addDocument')}
+          </button>
+        )}
       </div>
 
       {/* Search and Filter */}
@@ -542,6 +647,14 @@ const DocumentsPage: React.FC = () => {
           <h3 style={{ marginBottom: '1rem' }}>{t('documents.uploadNewDocument')}</h3>
           <form className="form" onSubmit={handleUpload}>
             <label>
+              {t('documents.category')}
+              <select value={category} onChange={(e) => setCategory(e.target.value as 'Corporate Document' | 'Permit Document')}>
+                <option value="Corporate Document">Corporate Document</option>
+                <option value="Permit Document">Permit Document</option>
+              </select>
+            </label>
+
+            <label>
               {t('documents.documentType')}
               <select value={documentType} onChange={(e) => setDocumentType(e.target.value as 'master' | 'sub')}>
                 <option value="master">{t('documents.masterDocument')}</option>
@@ -573,41 +686,44 @@ const DocumentsPage: React.FC = () => {
             )}
 
             <label>
-              <span>{t('forms.title')} <span style={{ color: '#dc2626' }}>*</span></span>
+              <span>Document Title <span style={{ color: '#dc2626' }}>*</span></span>
               <input value={title} onChange={(e) => setTitle(e.target.value)} required />
             </label>
-            <label>
-              <span>{t('forms.location')} <span style={{ color: '#dc2626' }}>*</span></span>
-              <input value={location} onChange={(e) => setLocation(e.target.value)} required />
-            </label>
+            <LocationInput
+              value={location}
+              onChange={setLocation}
+              label="Location"
+              placeholder="Ketik atau pilih lokasi..."
+              required={true}
+            />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <label>
-                {t('forms.longitudeOptional')}
+                Longitude (Optional)
                 <input 
                   type="number" 
                   step="any" 
                   value={longitude} 
                   onChange={(e) => setLongitude(e.target.value)} 
-                  placeholder={t('forms.longitudeExample')}
+                  placeholder="-8.7208"
                 />
               </label>
               <label>
-                {t('forms.latitudeOptional')}
+                Latitude (Optional)
                 <input 
                   type="number" 
                   step="any" 
                   value={latitude} 
                   onChange={(e) => setLatitude(e.target.value)} 
-                  placeholder={t('forms.latitudeExample')}
+                  placeholder="115.1690"
                 />
               </label>
             </div>
             <label>
-              {t('forms.description')}
+              Description
               <textarea 
                 value={description} 
                 onChange={(e) => setDescription(e.target.value)} 
-                placeholder={t('forms.descriptionPlaceholder')}
+                placeholder="Enter document description..."
                 maxLength={350}
                 rows={4}
                 style={{ 
@@ -622,15 +738,15 @@ const DocumentsPage: React.FC = () => {
                 }}
               />
               <span style={{ fontSize: '0.85rem', color: '#9aa4b2', marginTop: '0.25rem' }}>
-                {description.length}/350 {t('forms.charCountSuffix')}
+                {description.length}/350 characters
               </span>
             </label>
 
             {/* NEW CERTIFICATE & PROPERTY FIELDS */}
             <label>
-              <span>{t('forms.certificateType')} <span style={{ color: '#ff6b6b' }}>*</span></span>
+              <span>Certificate Type <span style={{ color: '#ff6b6b' }}>*</span></span>
               <select value={certificateType} onChange={(e) => setCertificateType(e.target.value)} required>
-                <option value="">{t('forms.selectCertificate')}</option>
+                <option value="">Select Certificate Type</option>
                 <option value="SHM">SHM</option>
                 <option value="SHGB">SHGB</option>
                 <option value="SHGU">SHGU</option>
@@ -644,34 +760,34 @@ const DocumentsPage: React.FC = () => {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <label>
-                {t('forms.landSize')}
+                Land Size
                 <input 
                   value={landSize} 
                   onChange={(e) => setLandSize(e.target.value)} 
-                  placeholder={t('forms.landSizePlaceholder')}
+                  placeholder="e.g., 500 m²"
                 />
               </label>
               <label>
-                {t('forms.areaName')}
+                Area Name
                 <input 
                   value={areaName} 
                   onChange={(e) => setAreaName(e.target.value)} 
-                  placeholder={t('forms.areaNamePlaceholder')}
+                  placeholder="e.g., Jimbaran Hijau"
                 />
               </label>
             </div>
 
             <label>
-              {t('forms.projectName')}
+              Project Name
               <input 
                 value={projectName} 
                 onChange={(e) => setProjectName(e.target.value)} 
-                placeholder={t('forms.projectNamePlaceholder')}
+                placeholder="e.g., Luxury Villas Project"
               />
             </label>
 
             <label>
-              {t('forms.zoneUrl')}
+              Zone URL
               <input 
                 value={zoneUrl} 
                 onChange={(e) => setZoneUrl(e.target.value)} 
@@ -680,7 +796,7 @@ const DocumentsPage: React.FC = () => {
             </label>
 
             <label>
-              {t('forms.zoneRtdr')}
+              Zone RTDR
               <input 
                 value={zoneRtdr} 
                 onChange={(e) => setZoneRtdr(e.target.value)} 
@@ -691,7 +807,7 @@ const DocumentsPage: React.FC = () => {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <label>
                 <div style={{ marginBottom: '0.5rem' }}>
-                  {t('forms.publishDate')} <span style={{ color: '#ff6b6b' }}>*</span>
+                  Publish Date <span style={{ color: '#ff6b6b' }}>*</span>
                 </div>
                 <input 
                   type="date"
@@ -703,7 +819,7 @@ const DocumentsPage: React.FC = () => {
               </label>
               <label>
                 <div style={{ marginBottom: '0.5rem' }}>
-                  {t('forms.expiredDate')}
+                  Expired Date
                 </div>
                 <input 
                   type="date"
@@ -715,7 +831,7 @@ const DocumentsPage: React.FC = () => {
             </div>
 
             <label>
-              {t('forms.documentObtained')}
+              Document Obtained Date
               <input 
                 type="date"
                 value={documentObtained} 
@@ -724,7 +840,7 @@ const DocumentsPage: React.FC = () => {
             </label>
 
             <label>
-              {t('forms.originDocument')}
+              Origin Document
               <input 
                 value={originDocument} 
                 onChange={(e) => setOriginDocument(e.target.value)} 
@@ -733,7 +849,7 @@ const DocumentsPage: React.FC = () => {
             </label>
 
             <label>
-              {t('forms.previousOwner')}
+              Previous Owner
               <input 
                 value={previousOwner} 
                 onChange={(e) => setPreviousOwner(e.target.value)} 
@@ -753,7 +869,7 @@ const DocumentsPage: React.FC = () => {
             </label>
 
             <label>
-              {t('forms.filePdf')}
+              PDF File <span style={{ color: '#ff6b6b' }}>*</span>
               <input 
                 type="file" 
                 accept=".pdf,application/pdf"
@@ -853,13 +969,15 @@ const DocumentsPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="doc-actions">
-                  <button 
-                    onClick={() => openDocEditModal(d.id, d.title, d.location, d.description || '', 'master', d.longitude, d.latitude, d.certificateType, d.landSize, d.areaName, d.projectName, d.zoneUrl, d.zoneRtdr, d.publishDate, d.expiredDate, d.documentObtained, d.originDocument, d.previousOwner, d.company)}
-                    className="btn ghost"
-                    title={t('documents.editDocument')}
-                  >
-                    ✏️ {t('buttons.edit')}
-                  </button>
+                  {(user?.userLevel === 'admin' || user?.userLevel === 'level1') && (
+                    <button 
+                      onClick={() => openDocEditModal(d.id, d.title, d.location, d.description || '', 'master', d.longitude, d.latitude, d.certificateType, d.landSize, d.areaName, d.projectName, d.zoneUrl, d.zoneRtdr, d.publishDate, d.expiredDate, d.documentObtained, d.originDocument, d.previousOwner, d.company, d.category)}
+                      className="btn ghost"
+                      title={t('documents.editDocument')}
+                    >
+                      ✏️ {t('buttons.edit')}
+                    </button>
+                  )}
                   <button 
                     onClick={() => handleViewDocument(d.id, 'master', d.title)}
                     className="btn ghost"
@@ -867,14 +985,18 @@ const DocumentsPage: React.FC = () => {
                   >
                     👁️ {t('buttons.view')}
                   </button>
-                  <button onClick={() => handleDownloadDocument(d.id)} className="btn">{t('buttons.download')}</button>
-                  <button 
-                    onClick={() => openDeleteConfirm(d.id, 'master', d.title, (d.subDocuments?.length || 0) > 0)}
-                    className="btn small danger"
-                    title={t('buttons.delete')}
-                  >
-                    🗑️ {t('buttons.delete')}
-                  </button>
+                  {(user?.userLevel === 'admin' || user?.userLevel === 'level1' || user?.userLevel === 'level2') && (
+                    <button onClick={() => handleDownloadDocument(d.id)} className="btn">{t('buttons.download')}</button>
+                  )}
+                  {(user?.userLevel === 'admin' || user?.userLevel === 'level1') && (
+                    <button 
+                      onClick={() => openDeleteConfirm(d.id, 'master', d.title, (d.subDocuments?.length || 0) > 0)}
+                      className="btn small danger"
+                      title={t('buttons.delete')}
+                    >
+                      🗑️ {t('buttons.delete')}
+                    </button>
+                  )}
                 </div>
               </div>
               
@@ -937,65 +1059,18 @@ const DocumentsPage: React.FC = () => {
                           </div>
                         )}
                         {sub.description && <div className="subdoc-description">{sub.description}</div>}
-                        
-                        {/* Certificate & Property Information for Sub-Documents */}
-                        {(sub.certificateType || sub.landSize || sub.areaName || sub.projectName || sub.zoneUrl || sub.zoneRtdr || sub.publishDate || sub.expiredDate || sub.documentObtained || sub.originDocument || sub.previousOwner || sub.company) && (
-                          <div style={{ 
-                            marginTop: '0.5rem',
-                            paddingTop: '0.5rem',
-                            borderTop: '1px solid #e0e4e8',
-                            fontSize: '0.8rem'
-                          }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem 0.8rem' }}>
-                              {sub.certificateType && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Tipe:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.certificateType}</div>
-                                </div>
-                              )}
-                              {sub.landSize && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Luas:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.landSize}</div>
-                                </div>
-                              )}
-                              {sub.areaName && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Area:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.areaName}</div>
-                                </div>
-                              )}
-                              {sub.projectName && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Proyek:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.projectName}</div>
-                                </div>
-                              )}
-                              {sub.company && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Perusahaan:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{sub.company}</div>
-                                </div>
-                              )}
-                              {sub.publishDate && (
-                                <div>
-                                  <span style={{ color: '#7c7e8b', fontWeight: 500 }}>Diterbitkan:</span>
-                                  <div style={{ color: '#1d2e4a', marginTop: '0.05rem' }}>{new Date(sub.publishDate).toLocaleDateString('id-ID')}</div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
                       <div className="doc-actions">
-                        <button 
-                          onClick={() => openDocEditModal(sub.id, sub.title, sub.location, sub.description || '', 'sub', sub.longitude, sub.latitude, sub.certificateType, sub.landSize, sub.areaName, sub.projectName, sub.zoneUrl, sub.zoneRtdr, sub.publishDate, sub.expiredDate, sub.documentObtained, sub.originDocument, sub.previousOwner, sub.company)}
-                          className="btn ghost"
-                          title="Edit sub-document"
-                          style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
-                        >
-                          ✏️
-                        </button>
+                        {(user?.userLevel === 'admin' || user?.userLevel === 'level1') && (
+                          <button 
+                            onClick={() => openDocEditModal(sub.id, sub.title, sub.location, sub.description || '', 'sub', sub.longitude, sub.latitude, sub.certificateType, sub.landSize, sub.areaName, sub.projectName, sub.zoneUrl, sub.zoneRtdr, sub.publishDate, sub.expiredDate, sub.documentObtained, sub.originDocument, sub.previousOwner, sub.company, sub.category)}
+                            className="btn ghost"
+                            title="Edit sub-document"
+                            style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
+                          >
+                            ✏️
+                          </button>
+                        )}
                         <button 
                           onClick={() => handleViewDocument(sub.id, 'sub', sub.title)}
                           className="btn ghost"
@@ -1004,15 +1079,19 @@ const DocumentsPage: React.FC = () => {
                         >
                           👁️
                         </button>
-                        <button onClick={() => handleDownloadSubDocument(sub.id)} className="btn">{t('buttons.download')}</button>
-                        <button 
-                          onClick={() => openDeleteConfirm(sub.id, 'sub', sub.title)}
-                          className="btn small danger"
-                          title="Delete sub-document"
-                          style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
-                        >
-                          🗑️
-                        </button>
+                        {(user?.userLevel === 'admin' || user?.userLevel === 'level1' || user?.userLevel === 'level2') && (
+                          <button onClick={() => handleDownloadSubDocument(sub.id)} className="btn">{t('buttons.download')}</button>
+                        )}
+                        {(user?.userLevel === 'admin' || user?.userLevel === 'level1') && (
+                          <button 
+                            onClick={() => openDeleteConfirm(sub.id, 'sub', sub.title)}
+                            className="btn small danger"
+                            title="Delete sub-document"
+                            style={{ fontSize: '0.85rem', padding: '0.35rem 0.6rem' }}
+                          >
+                            🗑️
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -1089,7 +1168,7 @@ const DocumentsPage: React.FC = () => {
             <h3>{t('modals.editDocument')}</h3>
             <form onSubmit={handleUpdateDocInfo}>
               <label>
-                {t('forms.title')}
+                Document Title
                 <input 
                   type="text" 
                   value={editTitle} 
@@ -1098,18 +1177,23 @@ const DocumentsPage: React.FC = () => {
                   autoFocus
                 />
               </label>
+              <LocationInput
+                value={editLocation}
+                onChange={setEditLocation}
+                label="Location"
+                placeholder="Ketik atau pilih lokasi..."
+                required={false}
+              />
               <label>
-                {t('forms.location')}
-                <input 
-                  type="text" 
-                  value={editLocation} 
-                  onChange={(e) => setEditLocation(e.target.value)}
-                  required
-                />
+                {t('documents.category')}
+                <select value={editCategory} onChange={(e) => setEditCategory(e.target.value as 'Corporate Document' | 'Permit Document')}>
+                  <option value="Corporate Document">Corporate Document</option>
+                  <option value="Permit Document">Permit Document</option>
+                </select>
               </label>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <label>
-                  {t('forms.longitude')}
+                  Longitude (Optional)
                   <input 
                     type="number" 
                     step="any" 
@@ -1119,7 +1203,7 @@ const DocumentsPage: React.FC = () => {
                   />
                 </label>
                 <label>
-                  {t('forms.latitude')}
+                  Latitude (Optional)
                   <input 
                     type="number" 
                     step="any" 
@@ -1130,7 +1214,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
               </div>
               <label>
-                {t('forms.description')}
+                Description
                 <textarea 
                   value={editDescription} 
                   onChange={(e) => setEditDescription(e.target.value)}
@@ -1151,7 +1235,7 @@ const DocumentsPage: React.FC = () => {
               {/* Informasi Sertifikat & Properti Section */}
               <div>
                 <label>
-                  <span>{t('forms.certificateType')} <span style={{ color: '#dc2626' }}>*</span></span>
+                  <span>Certificate Type <span style={{ color: '#dc2626' }}>*</span></span>
                   <select 
                     value={editCertificateType} 
                     onChange={(e) => setEditCertificateType(e.target.value)}
@@ -1169,7 +1253,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.landSize')}
+                  Land Size
                   <input 
                     type="text" 
                     value={editLandSize} 
@@ -1179,7 +1263,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.areaName')}
+                  Area Name
                   <input 
                     type="text" 
                     value={editAreaName} 
@@ -1189,7 +1273,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.projectName')}
+                  Project Name
                   <input 
                     type="text" 
                     value={editProjectName} 
@@ -1199,7 +1283,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.zoneUrl')}
+                  Zone URL
                   <input 
                     type="text" 
                     value={editZoneUrl} 
@@ -1209,7 +1293,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.zoneRtdr')}
+                  Zone RTDR
                   <input 
                     type="text" 
                     value={editZoneRtdr} 
@@ -1221,7 +1305,7 @@ const DocumentsPage: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <label>
                     <div style={{ marginBottom: '0.5rem' }}>
-                      {t('forms.publishDate')} <span style={{ color: '#dc2626' }}>*</span>
+                      Publish Date <span style={{ color: '#dc2626' }}>*</span>
                     </div>
                     <input 
                       type="date" 
@@ -1232,7 +1316,7 @@ const DocumentsPage: React.FC = () => {
                   </label>
                   <label>
                     <div style={{ marginBottom: '0.5rem' }}>
-                      {t('forms.expiredDate')}
+                      Expired Date
                     </div>
                     <input 
                       type="date" 
@@ -1244,7 +1328,7 @@ const DocumentsPage: React.FC = () => {
                 </div>
                 
                 <label>
-                  {t('forms.documentObtained')}
+                  Document Obtained Date
                   <input 
                     type="date" 
                     value={editDocumentObtained} 
@@ -1253,7 +1337,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.originDocument')}
+                  Origin Document
                   <textarea 
                     value={editOriginDocument} 
                     onChange={(e) => setEditOriginDocument(e.target.value)}
@@ -1267,7 +1351,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  {t('forms.previousOwner')}
+                  Previous Owner
                   <input 
                     type="text" 
                     value={editPreviousOwner} 
@@ -1277,7 +1361,7 @@ const DocumentsPage: React.FC = () => {
                 </label>
                 
                 <label>
-                  <span>{t('forms.company')} <span style={{ color: '#dc2626' }}>*</span></span>
+                  <span>Company <span style={{ color: '#dc2626' }}>*</span></span>
                   <select 
                     value={editCompany} 
                     onChange={(e) => setEditCompany(e.target.value)}
@@ -1441,6 +1525,10 @@ const DocumentsPage: React.FC = () => {
                       <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.locationLabel')}</span>
                       <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailModal.location}</div>
                     </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
+                      <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.category')}</span>
+                      <div style={{ color: '#e8ecf1', margin: 0, padding: '0.5rem 0.75rem', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(59,130,246,0.25)', borderRadius: '6px', display: 'inline-block', border: '1px solid rgba(59,130,246,0.4)' }}>{detailModal.category || 'Corporate Document'}</div>
+                    </div>
                     {detailModal.description && (
                       <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
                         <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.descriptionLabel')}</span>
@@ -1547,6 +1635,12 @@ const DocumentsPage: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
                     <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.locationLabel')}</span>
                     <div style={{ color: '#e8ecf1', margin: 0, marginTop: '0', fontSize: '0.95rem', fontWeight: 500 }}>{detailSubModal.location}</div>
+                  </div>
+                )}
+                {detailSubModal.category && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', alignSelf: 'start' }}>
+                    <span style={{ color: '#a0a4b0', fontSize: '0.85rem', fontWeight: 600, display: 'block', margin: 0 }}>{t('documents.category')}</span>
+                    <div style={{ color: '#e8ecf1', margin: 0, padding: '0.5rem 0.75rem', fontSize: '0.95rem', fontWeight: 600, background: 'rgba(59,130,246,0.25)', borderRadius: '6px', display: 'inline-block', border: '1px solid rgba(59,130,246,0.4)' }}>{detailSubModal.category}</div>
                   </div>
                 )}
                 {detailSubModal.description && (
