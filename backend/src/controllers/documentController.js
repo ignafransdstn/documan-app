@@ -1,8 +1,34 @@
-const { Document, SubDocument, User } = require('../models');
+const { Document, SubDocument, User, DocumentVersion } = require('../models');
 const { sequelize } = require('../models');
 const fs = require('fs').promises;
 const path = require('path');
 const { logActivity } = require('../utils/activityLogger');
+
+const FIELD_LABELS = {
+  title: 'Title',
+  location: 'Location',
+  description: 'Description',
+  category: 'Category',
+  longitude: 'Longitude',
+  latitude: 'Latitude',
+  certificateType: 'Certificate Type',
+  landSize: 'Land Size',
+  areaName: 'Area Name',
+  projectName: 'Project Name',
+  zoneUrl: 'Zone URL',
+  zoneRtdr: 'Zone RTDR',
+  publishDate: 'Publish Date',
+  expiredDate: 'Expired Date',
+  documentObtained: 'Document Obtained',
+  issuingAgency: 'Issuing Agency',
+  originDocument: 'Origin Document',
+  physicalLocation: 'Physical Location',
+  physicalLocationDetail: 'Physical Location Detail',
+  previousOwner: 'Previous Owner',
+  company: 'Company',
+  permitNumber: 'Permit Number',
+  status: 'Status',
+};
 
 const createDocument = async (req, res) => {
   const transaction = await sequelize.transaction();
@@ -11,7 +37,8 @@ const createDocument = async (req, res) => {
     const { 
       title, location, status, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
-      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+      publishDate, expiredDate, documentObtained, issuingAgency, originDocument, physicalLocation, physicalLocationDetail, previousOwner, company,
+      permitNumber
     } = req.body;
     const file = req.file;
 
@@ -47,15 +74,11 @@ const createDocument = async (req, res) => {
         .map(d => parseInt(d.documentNo.replace('MD-', '')))
         .filter(n => !isNaN(n));
       
-      console.log('📋 All documentNos:', allDocs.map(d => d.documentNo));
-      console.log('🔢 Parsed numbers:', numbers);
-      
       if (numbers.length > 0) {
         nextNumber = Math.max(...numbers) + 1;
       }
     }
     const documentNo = `MD-${nextNumber.toString().padStart(6, '0')}`;
-    console.log('✨ Generated documentNo:', documentNo);
 
     const document = await Document.create({
       documentNo,
@@ -77,9 +100,13 @@ const createDocument = async (req, res) => {
       publishDate: publishDate ? new Date(publishDate) : null,
       expiredDate: expiredDate ? new Date(expiredDate) : null,
       documentObtained: documentObtained ? new Date(documentObtained) : null,
+      issuingAgency: issuingAgency || null,
       originDocument: originDocument || null,
+      physicalLocation: physicalLocation || null,
+      physicalLocationDetail: physicalLocationDetail || null,
       previousOwner: previousOwner || null,
       company,
+      permitNumber: permitNumber || null,
       metadata: {
         originalName: file.originalname,
         mimeType: file.mimetype,
@@ -118,7 +145,8 @@ const createSubDocument = async (req, res) => {
     const { 
       title, location, status, parentDocumentId, subDocumentNo, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
-      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+      publishDate, expiredDate, documentObtained, issuingAgency, originDocument, physicalLocation, physicalLocationDetail, previousOwner, company,
+      permitNumber
     } = req.body;
     const file = req.file;
 
@@ -174,9 +202,13 @@ const createSubDocument = async (req, res) => {
       publishDate: publishDate ? new Date(publishDate) : null,
       expiredDate: expiredDate ? new Date(expiredDate) : null,
       documentObtained: documentObtained ? new Date(documentObtained) : null,
+      issuingAgency: issuingAgency || null,
       originDocument: originDocument || null,
+      physicalLocation: physicalLocation || null,
+      physicalLocationDetail: physicalLocationDetail || null,
       previousOwner: previousOwner || null,
       company,
+      permitNumber: permitNumber || null,
       metadata: {
         originalName: file.originalname,
         mimeType: file.mimetype,
@@ -300,7 +332,22 @@ const updateDocument = async (req, res) => {
     if (previousOwner !== undefined) updateData.previousOwner = previousOwner;
     if (company !== undefined) updateData.company = company;
 
+    // Capture original values before update for change detection
+    const origValues = {};
+    Object.keys(updateData).forEach(f => { origValues[f] = document[f]; });
+
     await document.update(updateData);
+
+    // Build detailed change description
+    const statusChangedDoc = 'status' in updateData && String(origValues.status) !== String(updateData.status);
+    let updateDescDoc;
+    if (statusChangedDoc) {
+      updateDescDoc = `Status changed: ${document.title} (${origValues.status} → ${updateData.status})`;
+    } else {
+      const changedKeys = Object.keys(updateData).filter(f => String(origValues[f]) !== String(updateData[f]));
+      const fieldList = changedKeys.slice(0, 4).map(f => FIELD_LABELS[f] || f).join(', ');
+      updateDescDoc = `Updated master document: ${document.title}${fieldList ? ' [' + fieldList + ']' : ''}`;
+    }
 
     // Log activity
     await logActivity({
@@ -308,7 +355,7 @@ const updateDocument = async (req, res) => {
       action: 'UPDATE',
       entityType: 'document',
       entityId: document.id,
-      description: `Updated master document: ${document.title}`,
+      description: updateDescDoc,
       req
     });
 
@@ -335,7 +382,8 @@ const updateDocumentInfo = async (req, res) => {
     const { 
       title, location, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
-      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+      publishDate, expiredDate, documentObtained, issuingAgency, originDocument, physicalLocation, physicalLocationDetail, previousOwner, company,
+      permitNumber, status
     } = req.body;
     
     // Validate mandatory fields if provided
@@ -364,11 +412,31 @@ const updateDocumentInfo = async (req, res) => {
     if (publishDate !== undefined) document.publishDate = publishDate ? new Date(publishDate) : null;
     if (expiredDate !== undefined) document.expiredDate = expiredDate ? new Date(expiredDate) : null;
     if (documentObtained !== undefined) document.documentObtained = documentObtained ? new Date(documentObtained) : null;
+    if (issuingAgency !== undefined) document.issuingAgency = issuingAgency;
     if (originDocument !== undefined) document.originDocument = originDocument;
+    if (physicalLocation !== undefined) document.physicalLocation = physicalLocation || null;
+    if (physicalLocationDetail !== undefined) document.physicalLocationDetail = physicalLocationDetail || null;
     if (previousOwner !== undefined) document.previousOwner = previousOwner;
     if (company !== undefined) document.company = company;
-    
+    if (permitNumber !== undefined) document.permitNumber = permitNumber;
+    if (status !== undefined) document.status = status;
+
+    // Capture changed fields before save
+    const changedFieldsDoc = document.changed() || [];
+    const fieldChangesDoc = {};
+    changedFieldsDoc.forEach(f => { fieldChangesDoc[f] = { from: document.previous(f), to: document[f] }; });
+
     await document.save();
+
+    // Build detailed change description
+    const statusChangedInfo = 'status' in fieldChangesDoc;
+    let updateDescInfo;
+    if (statusChangedInfo) {
+      updateDescInfo = `Status changed: ${document.title} (${fieldChangesDoc.status.from} → ${fieldChangesDoc.status.to})`;
+    } else {
+      const fields = changedFieldsDoc.filter(f => f !== 'updatedAt').slice(0, 4).map(f => FIELD_LABELS[f] || f).join(', ');
+      updateDescInfo = `Updated document info: ${document.title}${fields ? ' [' + fields + ']' : ''}`;
+    }
 
     // Log activity
     await logActivity({
@@ -376,7 +444,7 @@ const updateDocumentInfo = async (req, res) => {
       action: 'UPDATE',
       entityType: 'document',
       entityId: document.id,
-      description: `Updated document info: ${document.title}`,
+      description: updateDescInfo,
       req
     });
 
@@ -403,7 +471,8 @@ const updateSubDocumentInfo = async (req, res) => {
     const { 
       title, location, description, category, longitude, latitude,
       certificateType, landSize, areaName, projectName, zoneUrl, zoneRtdr,
-      publishDate, expiredDate, documentObtained, originDocument, previousOwner, company
+      publishDate, expiredDate, documentObtained, issuingAgency, originDocument, physicalLocation, physicalLocationDetail, previousOwner, company,
+      permitNumber, status
     } = req.body;
     
     // Validate mandatory fields if provided
@@ -432,11 +501,31 @@ const updateSubDocumentInfo = async (req, res) => {
     if (publishDate !== undefined) subDocument.publishDate = publishDate ? new Date(publishDate) : null;
     if (expiredDate !== undefined) subDocument.expiredDate = expiredDate ? new Date(expiredDate) : null;
     if (documentObtained !== undefined) subDocument.documentObtained = documentObtained ? new Date(documentObtained) : null;
+    if (issuingAgency !== undefined) subDocument.issuingAgency = issuingAgency;
+    if (permitNumber !== undefined) subDocument.permitNumber = permitNumber;
     if (originDocument !== undefined) subDocument.originDocument = originDocument;
+    if (physicalLocation !== undefined) subDocument.physicalLocation = physicalLocation || null;
+    if (physicalLocationDetail !== undefined) subDocument.physicalLocationDetail = physicalLocationDetail || null;
     if (previousOwner !== undefined) subDocument.previousOwner = previousOwner;
     if (company !== undefined) subDocument.company = company;
-    
+    if (status !== undefined) subDocument.status = status;
+
+    // Capture changed fields before save
+    const changedFieldsSub = subDocument.changed() || [];
+    const fieldChangesSub = {};
+    changedFieldsSub.forEach(f => { fieldChangesSub[f] = { from: subDocument.previous(f), to: subDocument[f] }; });
+
     await subDocument.save();
+
+    // Build detailed change description
+    const statusChangedSub = 'status' in fieldChangesSub;
+    let updateDescSub;
+    if (statusChangedSub) {
+      updateDescSub = `Status changed: ${subDocument.title} (${fieldChangesSub.status.from} → ${fieldChangesSub.status.to})`;
+    } else {
+      const fields = changedFieldsSub.filter(f => f !== 'updatedAt').slice(0, 4).map(f => FIELD_LABELS[f] || f).join(', ');
+      updateDescSub = `Updated sub-document info: ${subDocument.title}${fields ? ' [' + fields + ']' : ''}`;
+    }
 
     // Log activity
     await logActivity({
@@ -444,7 +533,7 @@ const updateSubDocumentInfo = async (req, res) => {
       action: 'UPDATE',
       entityType: 'subdocument',
       entityId: subDocument.id,
-      description: `Updated sub-document info: ${subDocument.title}`,
+      description: updateDescSub,
       req
     });
 
@@ -663,6 +752,229 @@ const updateSubDocumentNumber = async (req, res) => {
   }
 };
 
+// ─── Document Version functions ───────────────────────────────────────────────
+
+const getDocumentVersions = async (req, res) => {
+  try {
+    const document = await Document.findByPk(req.params.id);
+    if (!document) return res.status(404).json({ message: 'Document not found' });
+
+    const versions = await DocumentVersion.findAll({
+      where: { documentId: req.params.id },
+      include: [{ model: User, as: 'uploader', attributes: ['username'] }],
+      order: [['versionNumber', 'DESC']]
+    });
+
+    // If no explicit versions exist, synthesise version 1 from the document's own filePath
+    if (versions.length === 0) {
+      return res.json([{
+        id: null,
+        documentId: document.id,
+        subDocumentId: null,
+        versionNumber: 1,
+        filePath: document.filePath,
+        originalName: document.metadata?.originalName || null,
+        fileSize: document.metadata?.size || null,
+        uploadedBy: document.createdBy,
+        label: 'Original',
+        createdAt: document.createdAt,
+        updatedAt: document.createdAt,
+        syntheticVersion: true,
+        uploader: null
+      }]);
+    }
+
+    res.json(versions);
+  } catch (error) {
+    console.error('Get document versions error:', error);
+    res.status(500).json({ message: 'Error getting document versions' });
+  }
+};
+
+const getSubDocumentVersions = async (req, res) => {
+  try {
+    const subDocument = await SubDocument.findByPk(req.params.id);
+    if (!subDocument) return res.status(404).json({ message: 'Sub-document not found' });
+
+    const versions = await DocumentVersion.findAll({
+      where: { subDocumentId: req.params.id },
+      include: [{ model: User, as: 'uploader', attributes: ['username'] }],
+      order: [['versionNumber', 'DESC']]
+    });
+
+    if (versions.length === 0) {
+      return res.json([{
+        id: null,
+        documentId: null,
+        subDocumentId: subDocument.id,
+        versionNumber: 1,
+        filePath: subDocument.filePath,
+        originalName: subDocument.metadata?.originalName || null,
+        fileSize: subDocument.metadata?.size || null,
+        uploadedBy: subDocument.createdBy,
+        label: 'Original',
+        createdAt: subDocument.createdAt,
+        updatedAt: subDocument.createdAt,
+        syntheticVersion: true,
+        uploader: null
+      }]);
+    }
+
+    res.json(versions);
+  } catch (error) {
+    console.error('Get sub-document versions error:', error);
+    res.status(500).json({ message: 'Error getting sub-document versions' });
+  }
+};
+
+const uploadDocumentVersion = async (req, res) => {
+  try {
+    const document = await Document.findByPk(req.params.id);
+    if (!document) return res.status(404).json({ message: 'Document not found' });
+
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const { label } = req.body;
+
+    // Count existing versions
+    const existingCount = await DocumentVersion.count({ where: { documentId: document.id } });
+
+    // If first new-version upload, save the original as v1 first
+    if (existingCount === 0) {
+      await DocumentVersion.create({
+        documentId: document.id,
+        versionNumber: 1,
+        filePath: document.filePath,
+        originalName: document.metadata?.originalName || null,
+        fileSize: document.metadata?.size || null,
+        uploadedBy: document.createdBy,
+        label: 'Original'
+      });
+    }
+
+    const nextVersionNumber = existingCount === 0 ? 2 : existingCount + 1;
+
+    const version = await DocumentVersion.create({
+      documentId: document.id,
+      versionNumber: nextVersionNumber,
+      filePath: req.file.path,
+      originalName: req.file.originalname,
+      fileSize: req.file.size,
+      uploadedBy: req.user.id,
+      label: label || null
+    });
+
+    // Update the document's filePath to point to the newest version
+    document.filePath = req.file.path;
+    document.metadata = {
+      ...document.metadata,
+      originalName: req.file.originalname,
+      mimeType: req.file.mimetype,
+      size: req.file.size
+    };
+    await document.save();
+
+    await logActivity({
+      userId: req.user.id,
+      action: 'UPLOAD',
+      entityType: 'document',
+      entityId: document.id,
+      description: `Uploaded new version (v${nextVersionNumber}) for document: ${document.title}`,
+      req
+    });
+
+    res.status(201).json(version);
+  } catch (error) {
+    console.error('Upload document version error:', error);
+    res.status(500).json({ message: 'Error uploading document version' });
+  }
+};
+
+const uploadSubDocumentVersion = async (req, res) => {
+  try {
+    const subDocument = await SubDocument.findByPk(req.params.id);
+    if (!subDocument) return res.status(404).json({ message: 'Sub-document not found' });
+
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+
+    const { label } = req.body;
+
+    const existingCount = await DocumentVersion.count({ where: { subDocumentId: subDocument.id } });
+
+    if (existingCount === 0) {
+      await DocumentVersion.create({
+        subDocumentId: subDocument.id,
+        versionNumber: 1,
+        filePath: subDocument.filePath,
+        originalName: subDocument.metadata?.originalName || null,
+        fileSize: subDocument.metadata?.size || null,
+        uploadedBy: subDocument.createdBy,
+        label: 'Original'
+      });
+    }
+
+    const nextVersionNumber = existingCount === 0 ? 2 : existingCount + 1;
+
+    const version = await DocumentVersion.create({
+      subDocumentId: subDocument.id,
+      versionNumber: nextVersionNumber,
+      filePath: req.file.path,
+      originalName: req.file.originalname,
+      fileSize: req.file.size,
+      uploadedBy: req.user.id,
+      label: label || null
+    });
+
+    subDocument.filePath = req.file.path;
+    subDocument.metadata = {
+      ...subDocument.metadata,
+      originalName: req.file.originalname,
+      mimeType: req.file.mimetype,
+      size: req.file.size
+    };
+    await subDocument.save();
+
+    await logActivity({
+      userId: req.user.id,
+      action: 'UPLOAD',
+      entityType: 'subdocument',
+      entityId: subDocument.id,
+      description: `Uploaded new version (v${nextVersionNumber}) for sub-document: ${subDocument.title}`,
+      req
+    });
+
+    res.status(201).json(version);
+  } catch (error) {
+    console.error('Upload sub-document version error:', error);
+    res.status(500).json({ message: 'Error uploading sub-document version' });
+  }
+};
+
+const viewDocumentVersion = async (req, res) => {
+  try {
+    const version = await DocumentVersion.findByPk(req.params.versionId);
+    if (!version) return res.status(404).json({ message: 'Version not found' });
+
+    if (req.user.userLevel === 'level3') {
+      return res.status(403).json({ message: 'Not authorized to view documents' });
+    }
+
+    await logActivity({
+      userId: req.user.id,
+      action: 'VIEW',
+      entityType: version.documentId ? 'document' : 'subdocument',
+      entityId: version.documentId || version.subDocumentId,
+      description: `Viewed version ${version.versionNumber}`,
+      req
+    });
+
+    res.download(version.filePath);
+  } catch (error) {
+    console.error('View document version error:', error);
+    res.status(500).json({ message: 'Error viewing document version' });
+  }
+};
+
 module.exports = {
   createDocument,
   createSubDocument,
@@ -675,5 +987,10 @@ module.exports = {
   downloadSubDocument,
   updateSubDocumentNumber,
   updateDocumentInfo,
-  updateSubDocumentInfo
+  updateSubDocumentInfo,
+  getDocumentVersions,
+  getSubDocumentVersions,
+  uploadDocumentVersion,
+  uploadSubDocumentVersion,
+  viewDocumentVersion
 };

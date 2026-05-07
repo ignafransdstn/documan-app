@@ -58,6 +58,13 @@ Icon
 .Spotlight-V100
 .Trashes
 
+# PID files
+*.pid
+services.pids
+
+# Cloudflare tunnel
+.cloudflare-tunnel-info
+
 # Temporary files
 *.tmp
 *.temp

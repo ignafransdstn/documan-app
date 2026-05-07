@@ -31,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       inactivityTimer = setTimeout(() => {
         // Auto logout setelah 1 jam tidak aktif
-        console.log('Session expired due to inactivity')
         setToken(null)
         setUser(null)
         localStorage.removeItem('token')

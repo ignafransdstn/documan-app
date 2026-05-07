@@ -7,6 +7,10 @@ module.exports = (sequelize) => {
         foreignKey: 'parentDocumentId',
         as: 'parentDocument'
       });
+      SubDocument.hasMany(models.DocumentVersion, {
+        foreignKey: 'subDocumentId',
+        as: 'versions'
+      });
     }
   }
 
@@ -55,7 +59,7 @@ module.exports = (sequelize) => {
       defaultValue: 'Corporate Document'
     },
     status: {
-      type: DataTypes.ENUM('active', 'archived', 'deleted'),
+      type: DataTypes.ENUM('active', 'archived', 'expired', 'deleted'),
       defaultValue: 'active'
     },
     metadata: {
@@ -99,8 +103,20 @@ module.exports = (sequelize) => {
       type: DataTypes.DATE,
       allowNull: true
     },
+    issuingAgency: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     originDocument: {
       type: DataTypes.TEXT,
+      allowNull: true
+    },
+    physicalLocation: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    physicalLocationDetail: {
+      type: DataTypes.STRING,
       allowNull: true
     },
     previousOwner: {
@@ -109,6 +125,10 @@ module.exports = (sequelize) => {
     },
     company: {
       type: DataTypes.ENUM('JH', 'JHT', 'BEP', 'PIJ'),
+      allowNull: true
+    },
+    permitNumber: {
+      type: DataTypes.STRING,
       allowNull: true
     }
   }, {

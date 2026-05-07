@@ -16,7 +16,12 @@ const {
   downloadSubDocument,
   updateSubDocumentNumber,
   updateDocumentInfo,
-  updateSubDocumentInfo
+  updateSubDocumentInfo,
+  getDocumentVersions,
+  getSubDocumentVersions,
+  uploadDocumentVersion,
+  uploadSubDocumentVersion,
+  viewDocumentVersion
 } = require('../controllers/documentController');
 
 /**
@@ -565,6 +570,24 @@ router.delete(
   '/sub-document/:id',
   checkUserLevel(['admin', 'level1']),
   deleteSubDocument
+);
+
+// Document version routes
+// NOTE: /versions/:versionId/view must be before /:id/versions to avoid route conflicts
+router.get('/versions/:versionId/view', viewDocumentVersion);
+router.get('/:id/versions', getDocumentVersions);
+router.post(
+  '/:id/versions',
+  checkUserLevel(['admin', 'level1']),
+  upload.single('document'),
+  uploadDocumentVersion
+);
+router.get('/sub-document/:id/versions', getSubDocumentVersions);
+router.post(
+  '/sub-document/:id/versions',
+  checkUserLevel(['admin', 'level1']),
+  upload.single('document'),
+  uploadSubDocumentVersion
 );
 
 module.exports = router;

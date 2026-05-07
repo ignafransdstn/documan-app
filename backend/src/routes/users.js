@@ -104,6 +104,8 @@ router.get('/', isAdmin, getAllUsers);
 router.get('/summary', verifyToken, async (req, res) => {
   try {
     const { User, Document, SubDocument } = require('../models');
+    const { Op } = require('sequelize');
+
     const totalUsers = await User.count();
     const admins = await User.count({ where: { userLevel: 'admin' } });
     const level1 = await User.count({ where: { userLevel: 'level1' } });
@@ -114,44 +116,135 @@ router.get('/summary', verifyToken, async (req, res) => {
     const totalSubDocuments = await SubDocument.count();
     const totalDocuments = totalMasterDocuments + totalSubDocuments;
     const recentDocuments = await Document.findAll({ order: [['createdAt', 'DESC']], limit: 5 });
-    
-    // Get active sessions: users yang login dalam 1 jam terakhir dan belum logout
-    // Sesi dianggap aktif jika:
-    // 1. lastLogin ada dan dalam 1 jam terakhir
-    // 2. lastLogout null ATAU lastLogout < lastLogin (belum logout setelah login terakhir)
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000); // 1 jam
-    const { Op } = require('sequelize');
-    
-    const activeUsers = await User.findAll({
+
+    // Document status breakdown (master + sub combined)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Active: status='active' AND (no expiredDate OR expiredDate >= today)
+    const activeCount = await Document.count({
       where: {
-        lastLogin: {
-          [Op.gte]: oneHourAgo
-        },
+        status: 'active',
         [Op.or]: [
-          { lastLogout: null },
-          {
-            lastLogout: {
-              [Op.lt]: require('sequelize').literal('"lastLogin"')
-            }
-          }
+          { expiredDate: null },
+          { expiredDate: { [Op.gte]: today } }
         ]
       }
     });
-    
+    const activeSubCount = await SubDocument.count({
+      where: {
+        status: 'active',
+        [Op.or]: [
+          { expiredDate: null },
+          { expiredDate: { [Op.gte]: today } }
+        ]
+      }
+    });
+
+    // Archived
+    const archivedCount = await Document.count({ where: { status: 'archived' } });
+    const archivedSubCount = await SubDocument.count({ where: { status: 'archived' } });
+
+    // Expired: expiredDate < today (regardless of status field)
+    const expiredCount = await Document.count({
+      where: { expiredDate: { [Op.lt]: today }, status: { [Op.ne]: 'archived' } }
+    });
+    const expiredSubCount = await SubDocument.count({
+      where: { expiredDate: { [Op.lt]: today }, status: { [Op.ne]: 'archived' } }
+    });
+
+    // Expiry watch: H-30 (30 days ahead) to H+3 (3 days after expiry)
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const in30Days = new Date(today);
+    in30Days.setDate(in30Days.getDate() + 30);
+
+    const expiringDocuments = await Document.findAll({
+      where: {
+        status: { [Op.ne]: 'archived' },
+        expiredDate: { [Op.gte]: threeDaysAgo, [Op.lte]: in30Days }
+      },
+      attributes: ['id', 'title', 'expiredDate', 'location'],
+      order: [['expiredDate', 'ASC']],
+      limit: 15
+    });
+    const expiringSubDocuments = await SubDocument.findAll({
+      where: {
+        status: { [Op.ne]: 'archived' },
+        expiredDate: { [Op.gte]: threeDaysAgo, [Op.lte]: in30Days }
+      },
+      attributes: ['id', 'title', 'expiredDate', 'location'],
+      order: [['expiredDate', 'ASC']],
+      limit: 15
+    });
+
+    // Combine and sort by expiredDate ascending (expired first, then upcoming)
+    const expiringAll = [
+      ...expiringDocuments.map(d => ({ ...d.toJSON(), docType: 'master' })),
+      ...expiringSubDocuments.map(d => ({ ...d.toJSON(), docType: 'sub' }))
+    ].sort((a, b) => new Date(a.expiredDate) - new Date(b.expiredDate)).slice(0, 15);
+
+    // Year-ahead notification: only documents expiring in exactly 363–365 days
+    // (H-365, H-364, H-363 window — shows for 3 days then disappears automatically)
+    const in363Days = new Date(today);
+    in363Days.setDate(in363Days.getDate() + 363);
+    const in365Days = new Date(today);
+    in365Days.setDate(in365Days.getDate() + 365);
+    in365Days.setHours(23, 59, 59, 999);
+
+    const yearNotifDocs = await Document.findAll({
+      where: {
+        status: { [Op.ne]: 'archived' },
+        expiredDate: { [Op.gte]: in363Days, [Op.lte]: in365Days }
+      },
+      attributes: ['id', 'title', 'expiredDate', 'location'],
+      order: [['expiredDate', 'ASC']]
+    });
+    const yearNotifSubDocs = await SubDocument.findAll({
+      where: {
+        status: { [Op.ne]: 'archived' },
+        expiredDate: { [Op.gte]: in363Days, [Op.lte]: in365Days }
+      },
+      attributes: ['id', 'title', 'expiredDate', 'location'],
+      order: [['expiredDate', 'ASC']]
+    });
+    const yearAheadNotifications = [
+      ...yearNotifDocs.map(d => ({ ...d.toJSON(), docType: 'master' })),
+      ...yearNotifSubDocs.map(d => ({ ...d.toJSON(), docType: 'sub' }))
+    ].sort((a, b) => new Date(a.expiredDate) - new Date(b.expiredDate));
+
+    // Get active sessions
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const activeUsers = await User.findAll({
+      where: {
+        lastLogin: { [Op.gte]: oneHourAgo },
+        [Op.or]: [
+          { lastLogout: null },
+          { lastLogout: { [Op.lt]: require('sequelize').literal('"lastLogin"') } }
+        ]
+      }
+    });
     const activeSessions = activeUsers.length;
 
-    res.json({ 
-      totalUsers, 
-      admins, 
-      level1, 
-      level2, 
-      level3, 
-      pendingAdmins, 
-      totalDocuments, 
+    res.json({
+      totalUsers,
+      admins,
+      level1,
+      level2,
+      level3,
+      pendingAdmins,
+      totalDocuments,
       totalMasterDocuments,
       totalSubDocuments,
       activeSessions,
-      recentDocuments 
+      recentDocuments,
+      statusBreakdown: {
+        active: activeCount + activeSubCount,
+        archived: archivedCount + archivedSubCount,
+        expired: expiredCount + expiredSubCount
+      },
+      expiringDocuments: expiringAll,
+      yearAheadNotifications
     });
   } catch (error) {
     console.error('Summary error:', error);

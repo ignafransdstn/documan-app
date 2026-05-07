@@ -8,6 +8,7 @@ import PageTransition from './components/PageTransition'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import DocumentsPage from './pages/DocumentsPage'
+import ProjectPage from './pages/ProjectPage'
 import UsersPage from './pages/UsersPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -18,27 +19,9 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
   const { token, user } = useAuth()
-  
-  // Debug logging
-  console.log('AdminRoute check - token:', !!token, 'user:', user)
-  
-  // If no token, redirect to login
-  if (!token) {
-    console.log('AdminRoute: No token, redirecting to login')
-    return <Navigate to="/login" replace />
-  }
-  // If user data not loaded yet, show loading (don't redirect yet)
-  if (!user) {
-    console.log('AdminRoute: User not loaded yet, showing loading')
-    return <div style={{ padding: '2rem', textAlign: 'center', color: '#9aa4b2' }}>Loading...</div>
-  }
-  // If user is not admin, redirect to dashboard
-  if (user.userLevel !== 'admin') {
-    console.log('AdminRoute: User level is', user.userLevel, ', redirecting to dashboard')
-    return <Navigate to="/dashboard" replace />
-  }
-  // User is admin, allow access
-  console.log('AdminRoute: User is admin, allowing access')
+  if (!token) return <Navigate to="/login" replace />
+  if (!user) return <div style={{ padding: '2rem', textAlign: 'center', color: '#9aa4b2' }}>Loading...</div>
+  if (user.userLevel !== 'admin') return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 
@@ -60,6 +43,11 @@ function App() {
                 <Route path="/documents" element={
                   <ProtectedRoute>
                     <DocumentsPage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/project" element={
+                  <ProtectedRoute>
+                    <ProjectPage />
                   </ProtectedRoute>
                 } />
                 <Route path="/users" element={

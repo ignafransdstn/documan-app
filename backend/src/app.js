@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth');
 const documentRoutes = require('./routes/documents');
 const userRoutes = require('./routes/users');
 const activityLogRoutes = require('./routes/activityLogs');
+const projectRoutes = require('./routes/projects');
 
 const app = express();
 
@@ -79,6 +80,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/activity-logs', activityLogRoutes);
+app.use('/api/projects', projectRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -97,7 +99,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Database connection and server start
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {

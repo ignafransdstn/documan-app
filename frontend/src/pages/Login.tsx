@@ -9,12 +9,14 @@ const Login: React.FC = () => {
   const { t } = useLanguage()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSignup, setShowSignup] = useState(false)
   // Signup fields
   const [suUsername, setSuUsername] = useState('')
   const [suPassword, setSuPassword] = useState('')
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
   const [suName, setSuName] = useState('')
   const [suEmail, setSuEmail] = useState('')
   const [suLevel, setSuLevel] = useState('level3')
@@ -31,7 +33,7 @@ const Login: React.FC = () => {
       await auth.login(username, password)
       navigate('/dashboard')
     } catch (err: unknown) {
-  setError(extractErrorMessage(err) || JSON.stringify(err))
+      setError(extractErrorMessage(err) || JSON.stringify(err))
     } finally {
       setLoading(false)
     }
@@ -71,11 +73,27 @@ const Login: React.FC = () => {
       <form onSubmit={handleSubmit} className="form">
         <label>
           {t('auth.username')}
-          <input value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
         </label>
         <label>
           {t('auth.password')}
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <div className="password-wrapper">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              style={{ paddingRight: '2.5rem' }}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? '👁️' : '👁️‍🗨️'}
+            </button>
+          </div>
         </label>
         {error && <div className="error">{error}</div>}
         <button type="submit" className="btn primary" disabled={loading}>{loading ? t('auth.signing') : t('auth.signIn')}</button>
@@ -90,15 +108,31 @@ const Login: React.FC = () => {
           <form onSubmit={handleSignup} className="form">
             <label>
               {t('auth.username')}
-              <input value={suUsername} onChange={(e) => setSuUsername(e.target.value)} required />
+              <input type="text" value={suUsername} onChange={(e) => setSuUsername(e.target.value)} required />
             </label>
             <label>
               {t('auth.password')}
-              <input type="password" value={suPassword} onChange={(e) => setSuPassword(e.target.value)} required />
+              <div className="password-wrapper">
+                <input 
+                  type={showSignupPassword ? "text" : "password"} 
+                  value={suPassword} 
+                  onChange={(e) => setSuPassword(e.target.value)} 
+                  required 
+                  style={{ paddingRight: '2.5rem' }}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowSignupPassword(!showSignupPassword)}
+                  title={showSignupPassword ? "Hide password" : "Show password"}
+                >
+                  {showSignupPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
             </label>
             <label>
               {t('auth.fullName')}
-              <input value={suName} onChange={(e) => setSuName(e.target.value)} />
+              <input type="text" value={suName} onChange={(e) => setSuName(e.target.value)} />
             </label>
             <label>
               {t('auth.email')}

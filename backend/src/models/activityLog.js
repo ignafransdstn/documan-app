@@ -20,7 +20,7 @@ module.exports = (sequelize) => {
       }
     },
     action: {
-      type: DataTypes.ENUM('LOGIN', 'LOGOUT', 'CREATE', 'UPDATE', 'DELETE', 'VIEW', 'DOWNLOAD'),
+      type: DataTypes.ENUM('LOGIN', 'LOGOUT', 'CREATE', 'UPDATE', 'DELETE', 'VIEW', 'DOWNLOAD', 'UPLOAD'),
       allowNull: false
     },
     entityType: {

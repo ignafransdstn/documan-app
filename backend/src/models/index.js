@@ -19,7 +19,11 @@ const modelDefiners = [
   require('./user'),
   require('./document'),
   require('./subDocument'),
-  require('./activityLog')
+  require('./activityLog'),
+  require('./documentVersion'),
+  require('./project'),
+  require('./projectDocument'),
+  require('./projectSupportingDocument')
 ];
 
 // Initialize models
