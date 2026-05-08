@@ -218,18 +218,23 @@ document-management-system/
 
 ### 📊 Database Schema
 
-#### Tables
-- **Users** - User accounts dengan roles
-- **Documents** - Master documents
-- **SubDocuments** - Child documents linked to masters
-- **ActivityLogs** - User activity tracking
+| Table | Kolom Utama |
+|-------|-------------|
+| `users` | id, username, email, password, userLevel, isActive |
+| `documents` | id, documentNo, certificateType, company, publishDate, expiryDate, latitude, longitude, userId |
+| `sub_documents` | id, subDocumentNo, certificateType, publishDate, expiryDate, documentId |
+| `document_versions` | id, documentId, filePath, version, uploadedBy |
+| `projects` | id, name, description, userId |
+| `project_documents` | id, projectId, documentId |
+| `activity_logs` | id, userId, action, description, ipAddress, createdAt |
 
-#### Key Relationships
 ```
-Users (1) ──────► (N) Documents
-                       │
-                       └──► (N) SubDocuments
-Users (1) ──────► (N) ActivityLogs
+users ──► documents ──► sub_documents
+  │            └──────► document_versions
+  │
+  ├──► projects ──► project_documents ──► documents
+  │
+  └──► activity_logs
 ```
 
 ### 🧪 Testing
