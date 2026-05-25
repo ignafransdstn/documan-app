@@ -126,6 +126,36 @@ router.post('/logout', verifyToken, logout);
 
 // Public signup endpoint (allows creating non-admin users immediately).
 // If a user requests admin level, their account will be created as pending approval.
+/**
+ * @swagger
+ * /auth/signup:
+ *   post:
+ *     summary: Public self-registration
+ *     description: Anyone can sign up. Non-admin accounts are activated immediately. If userLevel=admin is requested, account is created with isApproved=false and requires admin approval before login is allowed.
+ *     tags: [Authentication]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterRequest'
+ *     responses:
+ *       201:
+ *         description: User registered successfully. If admin level requested, account is pending approval.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Validation error or username/email already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ */
 router.post('/signup', signupValidation, validateResult, signupPublic);
 
 // Protected routes

@@ -572,6 +572,176 @@ router.delete(
   deleteSubDocument
 );
 
+/**
+ * @swagger
+ * /documents/versions/{versionId}/view:
+ *   get:
+ *     summary: View/stream a specific document version file inline
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: versionId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Document version ID
+ *     responses:
+ *       200:
+ *         description: PDF file streamed inline for browser viewing
+ *         content:
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Version not found
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * @swagger
+ * /documents/{id}/versions:
+ *   get:
+ *     summary: Get all versions of a master document
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Master document ID
+ *     responses:
+ *       200:
+ *         description: Version list retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DocumentVersion'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Internal server error
+ *   post:
+ *     summary: Upload a new version for a master document (Admin/Level1 only)
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Master document ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [document]
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 format: binary
+ *                 description: New PDF version file (max 10MB)
+ *     responses:
+ *       201:
+ *         description: New version uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DocumentVersion'
+ *       400:
+ *         description: No file uploaded
+ *       403:
+ *         description: Admin or Level1 access required
+ *       404:
+ *         description: Document not found
+ *       500:
+ *         description: Internal server error
+ */
+/**
+ * @swagger
+ * /documents/sub-document/{id}/versions:
+ *   get:
+ *     summary: Get all versions of a sub-document
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Sub-document ID
+ *     responses:
+ *       200:
+ *         description: Version list retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DocumentVersion'
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Sub-document not found
+ *       500:
+ *         description: Internal server error
+ *   post:
+ *     summary: Upload a new version for a sub-document (Admin/Level1 only)
+ *     tags: [Documents]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Sub-document ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [document]
+ *             properties:
+ *               document:
+ *                 type: string
+ *                 format: binary
+ *                 description: New PDF version file (max 10MB)
+ *     responses:
+ *       201:
+ *         description: New version uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/DocumentVersion'
+ *       400:
+ *         description: No file uploaded
+ *       403:
+ *         description: Admin or Level1 access required
+ *       404:
+ *         description: Sub-document not found
+ *       500:
+ *         description: Internal server error
+ */
 // Document version routes
 // NOTE: /versions/:versionId/view must be before /:id/versions to avoid route conflicts
 router.get('/versions/:versionId/view', viewDocumentVersion);

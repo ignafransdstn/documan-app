@@ -16,7 +16,7 @@ const options = {
       {
         url: process.env.NODE_ENV === 'production' 
           ? 'https://your-production-url.com/api' 
-          : `http://localhost:${process.env.PORT || 5000}/api`,
+          : `http://localhost:${process.env.PORT || 5001}/api`,
         description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server'
       }
     ],
@@ -89,7 +89,7 @@ const options = {
             },
             status: {
               type: 'string',
-              enum: ['active', 'archived', 'deleted'],
+              enum: ['active', 'archived', 'expired', 'deleted'],
               description: 'Document status'
             },
             certificateType: {
@@ -260,7 +260,7 @@ const options = {
             },
             status: {
               type: 'string',
-              enum: ['active', 'archived', 'deleted'],
+              enum: ['active', 'archived', 'expired', 'deleted'],
               description: 'Sub-document status'
             },
             metadata: {
@@ -277,6 +277,95 @@ const options = {
               format: 'date-time',
               description: 'Last update timestamp'
             }
+          }
+        },
+        Project: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', description: 'Project ID' },
+            type: { type: 'string', enum: ['project', 'dispute'], description: 'Project type' },
+            name: { type: 'string', description: 'Project name' },
+            number: { type: 'string', description: 'Project number/reference code' },
+            description: { type: 'string', description: 'Project description' },
+            status: { type: 'string', enum: ['active', 'closed', 'on_hold'], description: 'Project status' },
+            institution: {
+              type: 'string',
+              enum: ['POLSEK', 'POLRES', 'POLDA', 'KEJATI', 'KEJARI', 'KEJAGUNG', 'MA', 'MK', 'OTHERS'],
+              description: 'Legal institution (dispute type only)'
+            },
+            institutionDetail: { type: 'string', description: 'Institution detail (when institution=OTHERS)' },
+            startDate: { type: 'string', format: 'date', description: 'Project start date' },
+            estimatedEndDate: { type: 'string', format: 'date', description: 'Estimated end date' },
+            actualEndDate: { type: 'string', format: 'date', description: 'Actual end date (auto-sets status to closed)' },
+            createdBy: { type: 'integer', description: 'Creator user ID' },
+            creator: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                username: { type: 'string' }
+              }
+            },
+            linkedDocuments: {
+              type: 'array',
+              items: { type: 'object', properties: { id: { type: 'integer' }, documentId: { type: 'integer' } } }
+            },
+            supportingDocuments: {
+              type: 'array',
+              items: { $ref: '#/components/schemas/SupportingDocument' }
+            },
+            createdAt: { type: 'string', format: 'date-time' },
+            updatedAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        SupportingDocument: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer', description: 'File ID' },
+            projectId: { type: 'integer' },
+            originalName: { type: 'string', description: 'Original filename' },
+            filePath: { type: 'string' },
+            mimeType: { type: 'string' },
+            size: { type: 'integer', description: 'File size in bytes' },
+            createdAt: { type: 'string', format: 'date-time' }
+          }
+        },
+        ActivityLog: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            userId: { type: 'integer' },
+            action: {
+              type: 'string',
+              enum: ['LOGIN', 'LOGOUT', 'CREATE', 'UPDATE', 'DELETE', 'VIEW', 'DOWNLOAD', 'UPLOAD'],
+              description: 'Type of action performed'
+            },
+            entityType: { type: 'string', description: 'Type of entity affected (document, user, project, etc.)' },
+            entityId: { type: 'integer', description: 'ID of affected entity' },
+            description: { type: 'string', description: 'Human-readable description' },
+            ipAddress: { type: 'string', description: 'Client IP address' },
+            userAgent: { type: 'string', description: 'Client user agent string' },
+            createdAt: { type: 'string', format: 'date-time' },
+            user: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                username: { type: 'string' },
+                userLevel: { type: 'string' }
+              }
+            }
+          }
+        },
+        DocumentVersion: {
+          type: 'object',
+          properties: {
+            id: { type: 'integer' },
+            documentId: { type: 'integer', description: 'Parent document ID (null if sub-document version)' },
+            subDocumentId: { type: 'integer', description: 'Parent sub-document ID (null if master version)' },
+            filePath: { type: 'string' },
+            version: { type: 'integer', description: 'Version number (auto-increment)' },
+            uploadedBy: { type: 'integer', description: 'User ID who uploaded this version' },
+            metadata: { type: 'object', description: 'File metadata (originalName, mimeType, size)' },
+            createdAt: { type: 'string', format: 'date-time' }
           }
         },
         AuthResponse: {

@@ -98,6 +98,93 @@ router.use((req, res, next) => preventScreenCapture(req, res, next));
 router.get('/', isAdmin, getAllUsers);
 
 /**
+ * @swagger
+ * /users/summary:
+ *   get:
+ *     summary: Get system summary statistics
+ *     description: Returns user counts, document counts, status breakdown, expiring documents, year-ahead notifications, and active sessions. Admin sees full data; regular users see document stats only.
+ *     tags: [User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Summary data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalUsers:
+ *                   type: integer
+ *                 admins:
+ *                   type: integer
+ *                 level1:
+ *                   type: integer
+ *                 level2:
+ *                   type: integer
+ *                 level3:
+ *                   type: integer
+ *                 pendingAdmins:
+ *                   type: integer
+ *                 totalDocuments:
+ *                   type: integer
+ *                 totalMasterDocuments:
+ *                   type: integer
+ *                 totalSubDocuments:
+ *                   type: integer
+ *                 activeSessions:
+ *                   type: integer
+ *                 statusBreakdown:
+ *                   type: object
+ *                   properties:
+ *                     active:
+ *                       type: integer
+ *                     archived:
+ *                       type: integer
+ *                     expired:
+ *                       type: integer
+ *                 expiringDocuments:
+ *                   type: array
+ *                   description: Documents expiring within H-30 to H+3 range
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       title:
+ *                         type: string
+ *                       expiredDate:
+ *                         type: string
+ *                         format: date
+ *                       location:
+ *                         type: string
+ *                       docType:
+ *                         type: string
+ *                         enum: [master, sub]
+ *                 yearAheadNotifications:
+ *                   type: array
+ *                   description: Documents expiring in 363-365 days (3-day H-365 window)
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       title:
+ *                         type: string
+ *                       expiredDate:
+ *                         type: string
+ *                         format: date
+ *                       location:
+ *                         type: string
+ *                       docType:
+ *                         type: string
+ *                         enum: [master, sub]
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Internal server error
+ */
+/**
  * Summary endpoint - Accessible by all authenticated users
  * Non-admin users can see document counts but not active sessions details
  */
@@ -459,6 +546,43 @@ router.delete('/:id', isAdmin, deleteUser);
 router.post('/:id/change-password', changePassword);
 
 /**
+ * @swagger
+ * /users/{id}/reset-password:
+ *   post:
+ *     summary: Admin reset password for any user (Admin only)
+ *     tags: [User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Target user ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [newPassword]
+ *             properties:
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: New password to set for the user
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+/**
  * Admin reset password for another user
  */
 router.post('/:id/reset-password', isAdmin, async (req, res, next) => {
@@ -470,6 +594,43 @@ router.post('/:id/reset-password', isAdmin, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/{id}/approve:
+ *   post:
+ *     summary: Approve a pending user account (Admin only)
+ *     description: Approves a user account created with admin-level request (isApproved=false). User can log in after approval.
+ *     tags: [User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID to approve
+ *     responses:
+ *       200:
+ *         description: User approved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 /**
  * Approve a pending user (Admin only)
  */
@@ -483,6 +644,58 @@ router.post('/:id/approve', isAdmin, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /users/{id}/activation:
+ *   patch:
+ *     summary: Set user active or inactive (Admin only)
+ *     description: Activates or deactivates a non-admin user. Deactivated users are blocked from all endpoints until reactivated.
+ *     tags: [User Management]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [isActive]
+ *             properties:
+ *               isActive:
+ *                 type: boolean
+ *                 description: true to activate user, false to deactivate
+ *     responses:
+ *       200:
+ *         description: User activation status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 id:
+ *                   type: integer
+ *                 username:
+ *                   type: string
+ *                 isActive:
+ *                   type: boolean
+ *       400:
+ *         description: Cannot deactivate admin user
+ *       403:
+ *         description: Admin access required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 /**
  * Set user active/inactive (Admin only, cannot change admins)
  */
